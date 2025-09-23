@@ -1,0 +1,31 @@
+services:
+  db:
+    image: mysql:8.0.36-debian
+    container_name: db-prompt
+    restart: always
+    secrets:
+      - root-password
+    volumes:
+      - demo_data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=demo_db
+      - MYSQL_ROOT_HOST=%
+      - MYSQL_ROOT_PASSWORD_FILE=run/secrets/root-password
+      - MYSQL_USER=demo_user
+    ports:
+      - 3306:3306
+    cap_add:
+      - SYS_NICE
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1G
+        reservations:
+          cpus: "0.1"
+          memory: 256M
+secrets:
+  root-password:
+    file: docker/db/root.txt
+volumes:
+  demo_data:
