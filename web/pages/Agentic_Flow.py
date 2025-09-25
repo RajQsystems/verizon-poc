@@ -1,6 +1,11 @@
 import streamlit as st
 import streamlit.components.v1 as components
+from utils.sidebar_logo import add_sidebar_logo
 
+# =========================
+# Sidebar Logo
+# =========================
+add_sidebar_logo()
 # Define your 3 HTML codes
 html_code_1 = """
 <!DOCTYPE html>

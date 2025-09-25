@@ -2,6 +2,7 @@ import os
 import requests
 import pandas as pd
 import streamlit as st
+from utils.sidebar_logo import add_sidebar_logo
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -16,6 +17,11 @@ def fetch_data():
     r.raise_for_status()
     return r.json()
 
+
+# =========================
+# Sidebar Logo
+# =========================
+add_sidebar_logo()
 
 st.title("🚨 Project Risk Visibility & Alerts")
 st.caption(
