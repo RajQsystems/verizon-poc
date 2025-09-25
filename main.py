@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 
 from backend.app.api import init_routers
 
@@ -8,4 +8,6 @@ app = FastAPI(
     description="API for Agentic AI Boilerplate",
     version="1.0.0",
 )
-init_routers(app)
+router = APIRouter(prefix="/api/v1")
+init_routers(router)
+app.include_router(router)

@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     DATABASE_PASSWORD: str = Field(default="", description="Database password")
     DATABASE_HOST: str = Field(default="", description="Database host")
     DATABASE_NAME: str = Field(default="", description="Database name")
+    DATABASE_PORT: int = Field(default=5432, description="Database port")
 
     model_config = SettingsConfigDict(
         env_file=".env", extra="ignore", env_file_encoding="utf-8"
