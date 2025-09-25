@@ -22,8 +22,8 @@ query_interpretation_agent:
         - Do not assume the presence of both suffixes in every table.
         - Use the column only if it exists and matches the intended type (actual vs. forecast).
     </Rules>
-  # reasoning: true
-  # max_reasoning_attempts: 3
+  reasoning: true
+  max_reasoning_attempts: 3
 
 query_generation_agent:
   role: >

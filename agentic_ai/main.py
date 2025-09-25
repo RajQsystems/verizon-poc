@@ -1,4 +1,6 @@
 from agentic_ai.src.sql_query import SQLQueryGeneratorFlow
+from agentic_ai.src.real_estate_query import RealEsateFlow
+from agentic_ai.src.construction_query import ConstructionQueryFlow
 from agentic_ai.exceptions import APIError
 
 
@@ -11,9 +13,17 @@ async def sql_query_generator(user_prompt: str) -> None:
         raise
 
 
-if __name__ == "__main__":
-    import asyncio
+async def real_estate_query(user_prompt: str) -> None:
+    try:
+        flow = RealEsateFlow()
+        flow.plot("real_estate_flow")
+    except APIError:
+        raise
 
-    user_prompt = "List all projects that are at risk and missing required milestones."
-    result = asyncio.run(sql_query_generator(user_prompt))
-    print(result)
+
+async def construction_query_generator(user_prompt: str) -> None:
+    try:
+        flow = ConstructionQueryFlow()
+        flow.plot("construction_query_flow")
+    except APIError:
+        raise

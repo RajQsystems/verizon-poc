@@ -2,49 +2,27 @@ from decimal import Decimal
 from datetime import datetime, timezone
 
 import aiofiles
-from crewai.flow import Flow, listen, start, router, or_
+from crewai.flow import Flow, listen, start, router
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
-from agentic_ai.src.sql_query.crews import (
+from agentic_ai.src.real_estate_query.crews import (
     SQLResultInterpreterCrew,
-    SQLQueryGeneratorCrew,
-    SQLErrorUnderstandingCrew,
+    SQLExecutorCrew,
 )
-from agentic_ai.src.sql_query.schemas import SQLQueryState
+from agentic_ai.src.real_estate_query.schemas import SQLQueryState
 from backend.app.db.session import AsyncSessionLocal
 
 
-MAX_RETRIES = 3
-
-
-class SQLQueryGeneratorFlow(Flow[SQLQueryState]):
+class RealEsateFlow(Flow[SQLQueryState]):
     @start()
     async def read_table_description(self):
-        self.state.retry_count = 0
-
         async with aiofiles.open("agentic_ai/data/data.txt", mode="r") as f:
             column_description = await f.read()
         self.state.column_description = column_description
         return column_description
 
-    @listen(or_("read_table_description", "analyze_sql_error"))
-    async def generate_sql_query(self, column_description):
-        date_now = self._get_current_datetime()
-
-        crew = SQLQueryGeneratorCrew()
-        result = await crew.crew().kickoff_async(
-            inputs={
-                "column_description": column_description,
-                "user_prompt": self.state.user_prompt,
-                "date": date_now,
-                "previous_error": self.state.previous_error_analysis,
-            }
-        )
-        self.state.logical_query_plan = result.tasks_output[0].raw
-        return result.raw
-
-    @listen("generate_sql_query")
+    @listen("read_table_description")
     async def run_sql_query(self, sql_query: str):
         try:
             async with AsyncSessionLocal() as session:
@@ -70,16 +48,13 @@ class SQLQueryGeneratorFlow(Flow[SQLQueryState]):
 
     @router("run_sql_query")
     def handle_query_routing(self):
-        if self.state.retry_count >= MAX_RETRIES:
-            return "max_retries_exceeded"
-        self.state.retry_count += 1
         if self.state.has_sql_error:
             return "analyze_sql_error"
         return "interpret_result"
 
     @listen("analyze_error")
     async def analyze_sql_error(self):
-        crew = SQLErrorUnderstandingCrew()
+        crew = SQLExecutorCrew()
         result = await crew.crew().kickoff_async(
             inputs={
                 "user_prompt": self.state.user_prompt,
@@ -107,12 +82,6 @@ class SQLQueryGeneratorFlow(Flow[SQLQueryState]):
             return output
         output["data"].update({"rows": self.state.query_results})
         return output
-
-    @listen("max_retries_exceeded")
-    def handle_max_retries(self):
-        return {
-            "summary": "Maximum retry attempts exceeded. Please modify your prompt and try again."
-        }
 
     def _get_current_datetime(self):
         return datetime.now(timezone.utc).strftime("%B %d, %Y at %H:%M %Z")

@@ -15,7 +15,7 @@ result_interpretation_agent:
       </JSON>
 
       <Markdown>
-        <Summary>Descriptive text explaining table, trends, anomalies, formatted with headings, paragraphs, bold/italic emphasis, and bullet points for clarity.</Summary>
+        <Summary>Descriptive text explaining table, trends, anomalies, formatted with headings, paragraphs, bold/italic emphasis, and bullet points for clarity. **DON'T** put the table in markdown.</Summary>
         <EmptyHandling>Explicit message if no data</EmptyHandling>
       </Markdown>
 

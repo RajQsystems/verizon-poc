@@ -12,8 +12,8 @@ query_interpretation_task:
     Today's date is {date}.
 
     <User Request>
-    Here is the user's original request:
-    {user_prompt}
+      Here is the user's original request:
+      {user_prompt}
     </User Request>
 
     <Column Description>
