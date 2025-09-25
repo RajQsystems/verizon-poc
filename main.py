@@ -33,3 +33,9 @@ app.add_middleware(
 router = APIRouter(prefix="/api/v1")
 init_routers(router)
 app.include_router(router)
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8001)
