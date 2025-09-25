@@ -1,8 +1,6 @@
 {
-  "generated_at": "2025-09-25T08:20:00Z",
-  "thresholds": {
-    "rer_overdue_days": 30
-  },
+  "generated_at": "2025-09-25T11:30:00Z",
+  "thresholds": { "rer_overdue_days": 30 },
   "projects": [
     {
       "fuze_project_id": "ID_E28B3CB0A1",
@@ -15,7 +13,6 @@
       "vendor_construction_manager_company": "VENDORCONS_003",
       "transport_vendor": "TRANSPORTV_012",
       "status": "Active",
-
       "risk": {
         "is_rer_at_risk": true,
         "rer_past_due_days": 47,
@@ -26,7 +23,6 @@
         ],
         "risk_level": "red"
       },
-
       "dates": {
         "project_start": "2024-11-07",
         "rec": "2025-06-30",
@@ -34,7 +30,6 @@
         "rtc": "2025-08-22",
         "pcc": null
       },
-
       "durations_days": {
         "start_to_rer": 266,
         "rec_to_rer": 31,
@@ -42,19 +37,12 @@
         "rtc_to_pcc": null,
         "transport_awarded_to_completed": 18
       },
-
       "anomalies": {
-        "missing_required_milestones": [
-          "Building Permit Approved (A)",
-          "NEPA Complete (A)"
-        ],
-        "extreme_duration_flags": [
-          "RTC→PCC > 300 days (in-progress)"
-        ],
+        "missing_required_milestones": ["Building Permit Approved (A)", "NEPA Complete (A)"],
+        "extreme_duration_flags": ["RTC→PCC > 300 days (in-progress)"],
         "gating_violations": []
       }
     },
-
     {
       "fuze_project_id": "ID_ABCDEFG123",
       "site_name": "SITENAME_123",
@@ -66,14 +54,12 @@
       "vendor_construction_manager_company": "VENDORCONS_020",
       "transport_vendor": "TRANSPORTV_001",
       "status": "Active",
-
       "risk": {
         "is_rer_at_risk": false,
         "rer_past_due_days": 0,
         "risk_reasons": [],
         "risk_level": "green"
       },
-
       "dates": {
         "project_start": "2025-03-01",
         "rec": "2025-05-10",
@@ -81,7 +67,6 @@
         "rtc": "2025-06-01",
         "pcc": "2025-07-01"
       },
-
       "durations_days": {
         "start_to_rer": 80,
         "rec_to_rer": 10,
@@ -89,7 +74,6 @@
         "rtc_to_pcc": 30,
         "transport_awarded_to_completed": 9
       },
-
       "anomalies": {
         "missing_required_milestones": [],
         "extreme_duration_flags": [],
@@ -97,32 +81,17 @@
       }
     }
   ],
-
   "aggregates": {
     "vendors": [
-      {
-        "name": "VENDORSITE_146",
-        "role": "Site Acquisition",
-        "kpi": "REC→RTC",
-        "median_days": 74,
-        "variance_vs_market_median": 12.4
-      }
+      { "name": "VENDORSITE_146", "role": "Site Acquisition", "kpi": "REC→RTC", "median_days": 74, "variance_vs_market_median": 12.4 },
+      { "name": "VENDORCONS_003", "role": "Construction", "kpi": "Awarded→PCC", "median_days": 115, "variance_vs_market_median": 9.8 }
     ],
     "structure_owners": [
-      {
-        "name": "Owner_089",
-        "kpi": "REC→RTC",
-        "median_days": 83,
-        "variance_vs_market_median": 18.2
-      }
+      { "name": "Owner_089", "kpi": "REC→RTC", "median_days": 83, "variance_vs_market_median": 18.2 }
     ],
     "counties": [
-      {
-        "county": "COUNTY_018",
-        "avg_start_to_rer_days": 112.7,
-        "median_start_to_rer_days": 108,
-        "count": 42
-      }
+      { "county": "COUNTY_018", "avg_start_to_rer_days": 112.7, "median_start_to_rer_days": 108, "count": 42 },
+      { "county": "COUNTY_010", "avg_start_to_rer_days": 89.3, "median_start_to_rer_days": 84, "count": 31 }
     ]
   }
 }
