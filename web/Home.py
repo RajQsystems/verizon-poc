@@ -1,4 +1,6 @@
 import streamlit as st
+from utils.sidebar_logo import add_sidebar_logo
+
 
 st.set_page_config(
     page_title="Verizon New Build Intelligence — Dynamic Reporting",
@@ -7,6 +9,10 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# =========================
+# Sidebar Logo
+# =========================
+add_sidebar_logo()
 # =========================
 # Brand / Hero Header
 # =========================

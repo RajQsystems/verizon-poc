@@ -2,12 +2,17 @@ import requests
 import streamlit as st
 import os
 from utils.response_builder import display_response
-import json
 from dotenv import load_dotenv
+from utils.sidebar_logo import add_sidebar_logo
 
 load_dotenv()
 BASE_URL = os.getenv("BASE_URL")
 API_URL = f"{BASE_URL}/api/v1/query"
+
+# =========================
+# Sidebar Logo
+# =========================
+add_sidebar_logo()
 
 
 @st.cache_data(ttl=300)
