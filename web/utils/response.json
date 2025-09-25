@@ -1,0 +1,1133 @@
+{
+  "summary": "# Project Milestone Analysis for Q4 2025\n\nThis report summarises the forecasted milestones that may slip into Q4 2025 based on the current SQL query results. The focus is on projects within the relevant quarter timeframe that are at critical milestones for key projects.\n\n### Key Findings\n- **Milestones Identified**: A total of 93 milestones across various projects are set for completion between October 1, 2025, and December 31, 2025.\n- **Project Diversity**: Multiple milestones are related to the following actions: 'Real Estate Released', 'Construction Started', 'Physical Construction Completed', and 'Inservice Activation'.\n- **Specific Dates**: Notably, several milestones are scheduled for October, indicating a peak period for project activity in the upcoming quarter.\n- **Potential Bottlenecks**: Projects exhibiting multiple milestones clustered within a short time frame could pose risks of delays and require monitoring.\n\n### Milestone Summary Table\n| Project ID             | Site Name         | Milestone                       | Forecast Date | \n|-----------------------|-------------------|---------------------------------|---------------|\n| ID_605F603335        | SITENAME_583      | Real Estate Released           | 2025-10-01    |\n| ID_789764F06F        | SITENAME_756      | Real Estate Released           | 2025-10-01    |\n| ID_92B3DD8176        | SITENAME_295      | Construction Started           | 2025-10-01    |\n| ID_A5ECFC71E7        | SITENAME_441      | Real Estate Released           | 2025-10-01    |\n| ID_A5ECFC71E7        | SITENAME_441      | Construction Started           | 2025-10-01    |\n| ID_9B8D4BD44A        | SITENAME_727      | Real Estate Released           | 2025-10-03    |\n| ID_C33A326377        | SITENAME_644      | Construction Started           | 2025-10-03    |\n| ...                   | ...               | ...                             | ...           | \n",
+  "data": {
+    "columns": [
+      "fuze_project_id",
+      "site_name",
+      "milestone",
+      "forecast_date"
+    ],
+    "rows": [
+      {
+        "fuze_project_id": "ID_605F603335",
+        "site_name": "SITENAME_583",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-01"
+      },
+      {
+        "fuze_project_id": "ID_789764F06F",
+        "site_name": "SITENAME_756",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-01"
+      },
+      {
+        "fuze_project_id": "ID_92B3DD8176",
+        "site_name": "SITENAME_295",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-10-01"
+      },
+      {
+        "fuze_project_id": "ID_A5ECFC71E7",
+        "site_name": "SITENAME_441",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-01"
+      },
+      {
+        "fuze_project_id": "ID_A5ECFC71E7",
+        "site_name": "SITENAME_441",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-10-01"
+      },
+      {
+        "fuze_project_id": "ID_9B8D4BD44A",
+        "site_name": "SITENAME_727",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-03"
+      },
+      {
+        "fuze_project_id": "ID_C33A326377",
+        "site_name": "SITENAME_644",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-10-03"
+      },
+      {
+        "fuze_project_id": "ID_4D5D8FA5F2",
+        "site_name": "SITENAME_517",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-03"
+      },
+      {
+        "fuze_project_id": "ID_3A02D07C8E",
+        "site_name": "SITENAME_218",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-03"
+      },
+      {
+        "fuze_project_id": "ID_6609EA01E0",
+        "site_name": "SITENAME_157",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-03"
+      },
+      {
+        "fuze_project_id": "ID_3A02D07C8E",
+        "site_name": "SITENAME_218",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-10-06"
+      },
+      {
+        "fuze_project_id": "ID_D7735DA35F",
+        "site_name": "SITENAME_623",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-10-06"
+      },
+      {
+        "fuze_project_id": "ID_3535F45D3D",
+        "site_name": "SITENAME_797",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-10-06"
+      },
+      {
+        "fuze_project_id": "ID_AAE16091EC",
+        "site_name": "SITENAME_818",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-10-06"
+      },
+      {
+        "fuze_project_id": "ID_075F90E0E4",
+        "site_name": "SITENAME_083",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-10"
+      },
+      {
+        "fuze_project_id": "ID_53B93F7051",
+        "site_name": "SITENAME_715",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-10"
+      },
+      {
+        "fuze_project_id": "ID_2D8C895129",
+        "site_name": "SITENAME_058",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-10"
+      },
+      {
+        "fuze_project_id": "ID_EE8572D022",
+        "site_name": "SITENAME_479",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-10"
+      },
+      {
+        "fuze_project_id": "ID_112C189EE3",
+        "site_name": "SITENAME_782",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-10-13"
+      },
+      {
+        "fuze_project_id": "ID_E9A08A7860",
+        "site_name": "SITENAME_702",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-10-13"
+      },
+      {
+        "fuze_project_id": "ID_400DF0C3DD",
+        "site_name": "SITENAME_456",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-10-13"
+      },
+      {
+        "fuze_project_id": "ID_4EEDFD519D",
+        "site_name": "SITENAME_684",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-10-13"
+      },
+      {
+        "fuze_project_id": "ID_89F798651D",
+        "site_name": "SITENAME_206",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-15"
+      },
+      {
+        "fuze_project_id": "ID_9D4C955450",
+        "site_name": "SITENAME_435",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-15"
+      },
+      {
+        "fuze_project_id": "ID_AAE16091EC",
+        "site_name": "SITENAME_818",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-17"
+      },
+      {
+        "fuze_project_id": "ID_2E7B5E48EF",
+        "site_name": "SITENAME_616",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-10-17"
+      },
+      {
+        "fuze_project_id": "ID_25E50AF788",
+        "site_name": "SITENAME_543",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-17"
+      },
+      {
+        "fuze_project_id": "ID_CABD73BCF0",
+        "site_name": "SITENAME_568",
+        "milestone": "Construction Awarded",
+        "forecast_date": "2025-10-17"
+      },
+      {
+        "fuze_project_id": "ID_8D3CA8F05B",
+        "site_name": "SITENAME_005",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-17"
+      },
+      {
+        "fuze_project_id": "ID_019E22DC49",
+        "site_name": "SITENAME_638",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-17"
+      },
+      {
+        "fuze_project_id": "ID_1D85772728",
+        "site_name": "SITENAME_855",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-17"
+      },
+      {
+        "fuze_project_id": "ID_616E97E57F",
+        "site_name": "SITENAME_129",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-10-20"
+      },
+      {
+        "fuze_project_id": "ID_9B8D4BD44A",
+        "site_name": "SITENAME_727",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-10-20"
+      },
+      {
+        "fuze_project_id": "ID_5EBFD0AE19",
+        "site_name": "SITENAME_828",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-24"
+      },
+      {
+        "fuze_project_id": "ID_B5B9FF8B06",
+        "site_name": "SITENAME_087",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-10-24"
+      },
+      {
+        "fuze_project_id": "ID_9D1B9CB9D4",
+        "site_name": "SITENAME_309",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-24"
+      },
+      {
+        "fuze_project_id": "ID_D5CAD8FA9D",
+        "site_name": "SITENAME_744",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-24"
+      },
+      {
+        "fuze_project_id": "ID_8A052F66CE",
+        "site_name": "SITENAME_701",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-24"
+      },
+      {
+        "fuze_project_id": "ID_E6CB88ED0C",
+        "site_name": "SITENAME_323",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-24"
+      },
+      {
+        "fuze_project_id": "ID_789764F06F",
+        "site_name": "SITENAME_756",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-10-27"
+      },
+      {
+        "fuze_project_id": "ID_DCEFE4A261",
+        "site_name": "SITENAME_275",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-30"
+      },
+      {
+        "fuze_project_id": "ID_1A4B7D7E07",
+        "site_name": "SITENAME_064",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-10-30"
+      },
+      {
+        "fuze_project_id": "ID_2D8C895129",
+        "site_name": "SITENAME_058",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-10-30"
+      },
+      {
+        "fuze_project_id": "ID_1C7731B7BA",
+        "site_name": "SITENAME_178",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_C33A326377",
+        "site_name": "SITENAME_644",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_60CA695E36",
+        "site_name": "SITENAME_860",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_A090307ED7",
+        "site_name": "SITENAME_884",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_BF37ED7E0E",
+        "site_name": "SITENAME_500",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_277EA56BE3",
+        "site_name": "SITENAME_685",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_E66F25F8B8",
+        "site_name": "SITENAME_699",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_B5B9FF8B06",
+        "site_name": "SITENAME_087",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_F2C59C8887",
+        "site_name": "SITENAME_141",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_25B9F3A2A8",
+        "site_name": "SITENAME_750",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_02EC5AED7B",
+        "site_name": "SITENAME_333",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_DA0E1CC46A",
+        "site_name": "SITENAME_829",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_8A052F66CE",
+        "site_name": "SITENAME_701",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_52C4F43B3A",
+        "site_name": "SITENAME_585",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_019E22DC49",
+        "site_name": "SITENAME_638",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_B457061779",
+        "site_name": "SITENAME_010",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_1D85772728",
+        "site_name": "SITENAME_855",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_83C11DB543",
+        "site_name": "SITENAME_792",
+        "milestone": "Construction Awarded",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_29BFDC90B8",
+        "site_name": "SITENAME_734",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_B147596C78",
+        "site_name": "SITENAME_722",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_2CCB9320A8",
+        "site_name": "SITENAME_891",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_253F1D8EE3",
+        "site_name": "SITENAME_547",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_30705F44BE",
+        "site_name": "SITENAME_344",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_E7206C1B9C",
+        "site_name": "SITENAME_608",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_D3AF11D76A",
+        "site_name": "SITENAME_381",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-10-31"
+      },
+      {
+        "fuze_project_id": "ID_25E50AF788",
+        "site_name": "SITENAME_543",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-11-01"
+      },
+      {
+        "fuze_project_id": "ID_582266C620",
+        "site_name": "SITENAME_062",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-11-01"
+      },
+      {
+        "fuze_project_id": "ID_616E97E57F",
+        "site_name": "SITENAME_129",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-11-03"
+      },
+      {
+        "fuze_project_id": "ID_605F603335",
+        "site_name": "SITENAME_583",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-11-03"
+      },
+      {
+        "fuze_project_id": "ID_F1F171A9CA",
+        "site_name": "SITENAME_131",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-11-03"
+      },
+      {
+        "fuze_project_id": "ID_2131B60628",
+        "site_name": "SITENAME_078",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-11-03"
+      },
+      {
+        "fuze_project_id": "ID_8640FA0E77",
+        "site_name": "SITENAME_787",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-11-07"
+      },
+      {
+        "fuze_project_id": "ID_25B9F3A2A8",
+        "site_name": "SITENAME_750",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-11-07"
+      },
+      {
+        "fuze_project_id": "ID_65BB77CFF6",
+        "site_name": "SITENAME_576",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-11-08"
+      },
+      {
+        "fuze_project_id": "ID_18A122FFF8",
+        "site_name": "SITENAME_032",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-11-13"
+      },
+      {
+        "fuze_project_id": "ID_0F5B896248",
+        "site_name": "SITENAME_718",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-11-14"
+      },
+      {
+        "fuze_project_id": "ID_DB7F0B19A0",
+        "site_name": "SITENAME_610",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-11-14"
+      },
+      {
+        "fuze_project_id": "ID_BC7A6778F5",
+        "site_name": "SITENAME_349",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-11-14"
+      },
+      {
+        "fuze_project_id": "ID_4D5D8FA5F2",
+        "site_name": "SITENAME_517",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-11-14"
+      },
+      {
+        "fuze_project_id": "ID_0F5B896248",
+        "site_name": "SITENAME_718",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-11-14"
+      },
+      {
+        "fuze_project_id": "ID_D6B1B1B707",
+        "site_name": "SITENAME_640",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-11-14"
+      },
+      {
+        "fuze_project_id": "ID_D5CAD8FA9D",
+        "site_name": "SITENAME_744",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-11-14"
+      },
+      {
+        "fuze_project_id": "ID_359D8A8F97",
+        "site_name": "SITENAME_394",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-11-15"
+      },
+      {
+        "fuze_project_id": "ID_29BFDC90B8",
+        "site_name": "SITENAME_734",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-11-17"
+      },
+      {
+        "fuze_project_id": "ID_253F1D8EE3",
+        "site_name": "SITENAME_547",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-11-17"
+      },
+      {
+        "fuze_project_id": "ID_F2C59C8887",
+        "site_name": "SITENAME_141",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-11-17"
+      },
+      {
+        "fuze_project_id": "ID_DFB5615FA9",
+        "site_name": "SITENAME_682",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-11-21"
+      },
+      {
+        "fuze_project_id": "ID_E0671C932C",
+        "site_name": "SITENAME_725",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-11-21"
+      },
+      {
+        "fuze_project_id": "ID_45F5AFD6AA",
+        "site_name": "SITENAME_814",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-11-21"
+      },
+      {
+        "fuze_project_id": "ID_B8F982284A",
+        "site_name": "SITENAME_561",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-11-21"
+      },
+      {
+        "fuze_project_id": "ID_A090307ED7",
+        "site_name": "SITENAME_884",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-11-21"
+      },
+      {
+        "fuze_project_id": "ID_4E146C038B",
+        "site_name": "SITENAME_697",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-11-21"
+      },
+      {
+        "fuze_project_id": "ID_3A7F9C34A3",
+        "site_name": "SITENAME_622",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-11-21"
+      },
+      {
+        "fuze_project_id": "ID_5EBFD0AE19",
+        "site_name": "SITENAME_828",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-11-24"
+      },
+      {
+        "fuze_project_id": "ID_E28B3CB0A1",
+        "site_name": "SITENAME_857",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-11-24"
+      },
+      {
+        "fuze_project_id": "ID_8640FA0E77",
+        "site_name": "SITENAME_787",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-11-24"
+      },
+      {
+        "fuze_project_id": "ID_9D4C955450",
+        "site_name": "SITENAME_435",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-11-26"
+      },
+      {
+        "fuze_project_id": "ID_94A3B33A3E",
+        "site_name": "SITENAME_035",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-11-26"
+      },
+      {
+        "fuze_project_id": "ID_92B829A380",
+        "site_name": "SITENAME_812",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-11-28"
+      },
+      {
+        "fuze_project_id": "ID_B6FD6F1BC0",
+        "site_name": "SITENAME_563",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-11-28"
+      },
+      {
+        "fuze_project_id": "ID_1FA2245322",
+        "site_name": "SITENAME_132",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-11-28"
+      },
+      {
+        "fuze_project_id": "ID_2B209EA27D",
+        "site_name": "SITENAME_521",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-11-28"
+      },
+      {
+        "fuze_project_id": "ID_0B90051E57",
+        "site_name": "SITENAME_420",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-11-28"
+      },
+      {
+        "fuze_project_id": "ID_8E2DB203E4",
+        "site_name": "SITENAME_147",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-11-28"
+      },
+      {
+        "fuze_project_id": "ID_2DE18A7D74",
+        "site_name": "SITENAME_677",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-11-28"
+      },
+      {
+        "fuze_project_id": "ID_87C7EE87BF",
+        "site_name": "SITENAME_024",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-11-30"
+      },
+      {
+        "fuze_project_id": "ID_DFB5615FA9",
+        "site_name": "SITENAME_682",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-11-30"
+      },
+      {
+        "fuze_project_id": "ID_35FD837DD5",
+        "site_name": "SITENAME_260",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-11-30"
+      },
+      {
+        "fuze_project_id": "ID_B147596C78",
+        "site_name": "SITENAME_722",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-11-30"
+      },
+      {
+        "fuze_project_id": "ID_4DAEA561E7",
+        "site_name": "SITENAME_254",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-11-30"
+      },
+      {
+        "fuze_project_id": "ID_53B93F7051",
+        "site_name": "SITENAME_715",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-11-30"
+      },
+      {
+        "fuze_project_id": "ID_9A25C124C8",
+        "site_name": "SITENAME_533",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-11-30"
+      },
+      {
+        "fuze_project_id": "ID_558E577B20",
+        "site_name": "SITENAME_205",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-11-30"
+      },
+      {
+        "fuze_project_id": "ID_08C97E11FA",
+        "site_name": "SITENAME_574",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-01"
+      },
+      {
+        "fuze_project_id": "ID_C668AC3314",
+        "site_name": "SITENAME_127",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-01"
+      },
+      {
+        "fuze_project_id": "ID_4E80E11D57",
+        "site_name": "SITENAME_745",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-12-01"
+      },
+      {
+        "fuze_project_id": "ID_A840C90564",
+        "site_name": "SITENAME_779",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-12-01"
+      },
+      {
+        "fuze_project_id": "ID_BD2F739BB4",
+        "site_name": "SITENAME_209",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-01"
+      },
+      {
+        "fuze_project_id": "ID_3535F45D3D",
+        "site_name": "SITENAME_797",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-12-05"
+      },
+      {
+        "fuze_project_id": "ID_5F437A39BF",
+        "site_name": "SITENAME_845",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-12-05"
+      },
+      {
+        "fuze_project_id": "ID_D3C7A45B88",
+        "site_name": "SITENAME_692",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-05"
+      },
+      {
+        "fuze_project_id": "ID_4EEDFD519D",
+        "site_name": "SITENAME_684",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-12-05"
+      },
+      {
+        "fuze_project_id": "ID_808551D516",
+        "site_name": "SITENAME_629",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-05"
+      },
+      {
+        "fuze_project_id": "ID_D7735DA35F",
+        "site_name": "SITENAME_623",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-12-05"
+      },
+      {
+        "fuze_project_id": "ID_112C189EE3",
+        "site_name": "SITENAME_782",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-12-05"
+      },
+      {
+        "fuze_project_id": "ID_5E7B362E1E",
+        "site_name": "SITENAME_882",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-12-05"
+      },
+      {
+        "fuze_project_id": "ID_B6FD6F1BC0",
+        "site_name": "SITENAME_563",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-12-08"
+      },
+      {
+        "fuze_project_id": "ID_DB7F0B19A0",
+        "site_name": "SITENAME_610",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-12-08"
+      },
+      {
+        "fuze_project_id": "ID_DCEFE4A261",
+        "site_name": "SITENAME_275",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-12-11"
+      },
+      {
+        "fuze_project_id": "ID_F53093C64E",
+        "site_name": "SITENAME_511",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-12-11"
+      },
+      {
+        "fuze_project_id": "ID_D3AF11D76A",
+        "site_name": "SITENAME_381",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-12-12"
+      },
+      {
+        "fuze_project_id": "ID_1C7731B7BA",
+        "site_name": "SITENAME_178",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-12-12"
+      },
+      {
+        "fuze_project_id": "ID_A090307ED7",
+        "site_name": "SITENAME_884",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-12-12"
+      },
+      {
+        "fuze_project_id": "ID_605F603335",
+        "site_name": "SITENAME_583",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-12-12"
+      },
+      {
+        "fuze_project_id": "ID_AAE16091EC",
+        "site_name": "SITENAME_818",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-12-12"
+      },
+      {
+        "fuze_project_id": "ID_45B83CA4F6",
+        "site_name": "SITENAME_781",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-12"
+      },
+      {
+        "fuze_project_id": "ID_D1922D3ECA",
+        "site_name": "SITENAME_553",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-12"
+      },
+      {
+        "fuze_project_id": "ID_60CA695E36",
+        "site_name": "SITENAME_860",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-12-12"
+      },
+      {
+        "fuze_project_id": "ID_E66F25F8B8",
+        "site_name": "SITENAME_699",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-12-12"
+      },
+      {
+        "fuze_project_id": "ID_4EEDFD519D",
+        "site_name": "SITENAME_684",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-12-12"
+      },
+      {
+        "fuze_project_id": "ID_52C4F43B3A",
+        "site_name": "SITENAME_585",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-12-12"
+      },
+      {
+        "fuze_project_id": "ID_5F437A39BF",
+        "site_name": "SITENAME_845",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-12-12"
+      },
+      {
+        "fuze_project_id": "ID_E47AF93D50",
+        "site_name": "SITENAME_757",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-12"
+      },
+      {
+        "fuze_project_id": "ID_9392D148E6",
+        "site_name": "SITENAME_639",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-12"
+      },
+      {
+        "fuze_project_id": "ID_E7206C1B9C",
+        "site_name": "SITENAME_608",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-12-12"
+      },
+      {
+        "fuze_project_id": "ID_582266C620",
+        "site_name": "SITENAME_062",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-12-13"
+      },
+      {
+        "fuze_project_id": "ID_A090307ED7",
+        "site_name": "SITENAME_884",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-12-15"
+      },
+      {
+        "fuze_project_id": "ID_9FCB44AA9B",
+        "site_name": "SITENAME_243",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-15"
+      },
+      {
+        "fuze_project_id": "ID_60CA695E36",
+        "site_name": "SITENAME_860",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-12-15"
+      },
+      {
+        "fuze_project_id": "ID_E66F25F8B8",
+        "site_name": "SITENAME_699",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-12-15"
+      },
+      {
+        "fuze_project_id": "ID_664BD47016",
+        "site_name": "SITENAME_103",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-15"
+      },
+      {
+        "fuze_project_id": "ID_671DE8B1E8",
+        "site_name": "SITENAME_079",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-15"
+      },
+      {
+        "fuze_project_id": "ID_D36E70B05E",
+        "site_name": "SITENAME_383",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-15"
+      },
+      {
+        "fuze_project_id": "ID_F1F171A9CA",
+        "site_name": "SITENAME_131",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-15"
+      },
+      {
+        "fuze_project_id": "ID_3C33B5A7F1",
+        "site_name": "SITENAME_250",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-15"
+      },
+      {
+        "fuze_project_id": "ID_45F5AFD6AA",
+        "site_name": "SITENAME_814",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-12-15"
+      },
+      {
+        "fuze_project_id": "ID_DC39659F55",
+        "site_name": "SITENAME_546",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-17"
+      },
+      {
+        "fuze_project_id": "ID_83C11DB543",
+        "site_name": "SITENAME_792",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-19"
+      },
+      {
+        "fuze_project_id": "ID_92B829A380",
+        "site_name": "SITENAME_812",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-12-19"
+      },
+      {
+        "fuze_project_id": "ID_FF0E661AA0",
+        "site_name": "SITENAME_655",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-12-19"
+      },
+      {
+        "fuze_project_id": "ID_8D3CA8F05B",
+        "site_name": "SITENAME_005",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-12-19"
+      },
+      {
+        "fuze_project_id": "ID_BC7A6778F5",
+        "site_name": "SITENAME_349",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-12-26"
+      },
+      {
+        "fuze_project_id": "ID_359D8A8F97",
+        "site_name": "SITENAME_394",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-12-27"
+      },
+      {
+        "fuze_project_id": "ID_9022AECE20",
+        "site_name": "SITENAME_687",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-12-29"
+      },
+      {
+        "fuze_project_id": "ID_45B83CA4F6",
+        "site_name": "SITENAME_781",
+        "milestone": "Construction Started",
+        "forecast_date": "2025-12-29"
+      },
+      {
+        "fuze_project_id": "ID_8CB979A7A9",
+        "site_name": "SITENAME_597",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-12-30"
+      },
+      {
+        "fuze_project_id": "ID_B84C8EB656",
+        "site_name": "SITENAME_700",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-12-30"
+      },
+      {
+        "fuze_project_id": "ID_045CFA5FD6",
+        "site_name": "SITENAME_313",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-31"
+      },
+      {
+        "fuze_project_id": "ID_4750CFE09A",
+        "site_name": "SITENAME_438",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-31"
+      },
+      {
+        "fuze_project_id": "ID_6DB31289D8",
+        "site_name": "SITENAME_110",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-31"
+      },
+      {
+        "fuze_project_id": "ID_4B54D881D5",
+        "site_name": "SITENAME_528",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-31"
+      },
+      {
+        "fuze_project_id": "ID_7999C91F65",
+        "site_name": "SITENAME_018",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-12-31"
+      },
+      {
+        "fuze_project_id": "ID_E9A08A7860",
+        "site_name": "SITENAME_702",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-12-31"
+      },
+      {
+        "fuze_project_id": "ID_801467DB15",
+        "site_name": "SITENAME_474",
+        "milestone": "Inservice Activation",
+        "forecast_date": "2025-12-31"
+      },
+      {
+        "fuze_project_id": "ID_2E7B5E48EF",
+        "site_name": "SITENAME_616",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-12-31"
+      },
+      {
+        "fuze_project_id": "ID_8E52E7E251",
+        "site_name": "SITENAME_452",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-31"
+      },
+      {
+        "fuze_project_id": "ID_9992B31CE0",
+        "site_name": "SITENAME_470",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-31"
+      },
+      {
+        "fuze_project_id": "ID_BE7A063395",
+        "site_name": "SITENAME_303",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-31"
+      },
+      {
+        "fuze_project_id": "ID_A24520813C",
+        "site_name": "SITENAME_112",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-31"
+      },
+      {
+        "fuze_project_id": "ID_EB509ECDA4",
+        "site_name": "SITENAME_369",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-31"
+      },
+      {
+        "fuze_project_id": "ID_789764F06F",
+        "site_name": "SITENAME_756",
+        "milestone": "Physical Construction Completed",
+        "forecast_date": "2025-12-31"
+      },
+      {
+        "fuze_project_id": "ID_0F7093798A",
+        "site_name": "SITENAME_318",
+        "milestone": "Real Estate Released",
+        "forecast_date": "2025-12-31"
+      }
+    ]
+  },
+  "recommendations": [
+    "Highlight projects with milestones due next month in frontend.",
+    "Use a Gantt chart for milestone visualization.",
+    "Flag projects with multiple milestones in the same quarter."
+  ],
+  "visualization_hints": {
+    "table": true,
+    "timeline_chart": true,
+    "bar_chart": false
+  }
+}

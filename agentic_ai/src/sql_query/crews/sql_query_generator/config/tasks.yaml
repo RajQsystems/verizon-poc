@@ -399,4 +399,3 @@ query_generation_task:
   agent: query_generation_agent
   context:
     - query_interpretation_task
-  output_file: sql_query.sql

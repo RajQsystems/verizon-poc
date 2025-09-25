@@ -1,4 +1,24 @@
+import requests
 import streamlit as st
+import os
+from utils.response_builder import display_response
+import json
+from dotenv import load_dotenv
+
+load_dotenv()
+BASE_URL = os.getenv("BASE_URL")
+API_URL = f"{BASE_URL}/api/v1/query"
+
+
+@st.cache_data(ttl=300)
+def fetch_data(user_query: str = ""):
+    payload = {"user_query": user_query}
+    headers = {"Content-Type": "application/json"}
+
+    r = requests.post(API_URL, json=payload, headers=headers, timeout=300)
+    r.raise_for_status()
+    return r.json()
+
 
 # Page configuration
 st.set_page_config(
@@ -43,39 +63,57 @@ st.title("🤖 Agentic Assistant")
 st.caption("Ask me anything and I'll try to help")
 
 # Display chat messages
-chat_container = st.container()
-with chat_container:
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            if message.get("is_code", False):
-                st.code(message["content"], language="text")
-            else:
-                st.markdown(message["content"])
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        if message.get("is_code", False):
+            st.code(message["content"], language="text")
+        elif message["role"] == "assistant" and isinstance(message["content"], dict):
+            st.markdown(message["content"]["summary"])
+            if message["content"]["df"] is not None:
+                st.dataframe(message["content"]["df"], use_container_width=True)
+        else:
+            st.markdown(message["content"])
 
 # User input
 if prompt := st.chat_input("Type your message here..."):
-    # Add user message to chat history
+    # Add user message
     st.session_state.messages.append({"role": "user", "content": prompt})
 
     # Display user message
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Generate assistant response (LOCAL LOGIC instead of API)
+    # Assistant response
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         message_placeholder.markdown("Thinking ⏳")
 
-        # Simple placeholder logic
+        # Default assistant response
+        assistant_content = None
+
         if "hello" in prompt.lower():
-            assistant_response = "Hello there👋!"
+            assistant_content = "Hello there👋!"
         else:
-            assistant_response = f"I received your message: _{prompt}_"
+            # Read JSON and generate structured response
+            response = fetch_data(prompt)
+            if response:
+                summary, table = display_response(response)
+                assistant_content = {"summary": summary, "df": table}
+            else:
+                assistant_content = f"I received your message: _{prompt}_"
 
-        # Render assistant response
-        message_placeholder.markdown(assistant_response, unsafe_allow_html=True)
+        # Clear the "Thinking" placeholder
+        message_placeholder.empty()  # <-- This removes the "Thinking ⏳" text
 
-    # Store assistant response
-    st.session_state.messages.append(
-        {"role": "assistant", "content": assistant_response}
-    )
+        # Render the response
+        if isinstance(assistant_content, dict):
+            st.markdown(assistant_content["summary"])
+            if assistant_content["df"] is not None:
+                st.dataframe(assistant_content["df"], use_container_width=True)
+        else:
+            st.markdown(assistant_content)
+
+        # Store in session state
+        st.session_state.messages.append(
+            {"role": "assistant", "content": assistant_content}
+        )
