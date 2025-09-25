@@ -6,10 +6,11 @@ readme = "README.md"
 requires-python = ">=3.10, <3.13"
 dependencies = [
     "aiofiles>=24.1.0",
-    "asyncmy>=0.2.10",
+    "asyncpg>=0.30.0",
     "crewai>=0.148.0",
     "crewai-tools>=0.55.0",
     "fastapi[standard]>=0.116.0",
     "pydantic-settings>=2.10.1",
     "sqlalchemy[asyncio]>=2.0.41",
+    "streamlit>=1.50.0",
 ]
