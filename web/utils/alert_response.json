@@ -1,0 +1,128 @@
+{
+  "generated_at": "2025-09-25T08:20:00Z",
+  "thresholds": {
+    "rer_overdue_days": 30
+  },
+  "projects": [
+    {
+      "fuze_project_id": "ID_E28B3CB0A1",
+      "site_name": "SITENAME_857",
+      "local_market": "LOCALMARKE_002",
+      "county": "COUNTY_018",
+      "site_candidate_type": "Raw Land",
+      "structure_owner": "Owner_089",
+      "vendor_site_acquisition": "VENDORSITE_146",
+      "vendor_construction_manager_company": "VENDORCONS_003",
+      "transport_vendor": "TRANSPORTV_012",
+      "status": "Active",
+
+      "risk": {
+        "is_rer_at_risk": true,
+        "rer_past_due_days": 47,
+        "risk_reasons": [
+          "RER forecast date past due by 47 days",
+          "Zoning approval missing",
+          "REC→RTC duration exceeded market p75 by 22%"
+        ],
+        "risk_level": "red"
+      },
+
+      "dates": {
+        "project_start": "2024-11-07",
+        "rec": "2025-06-30",
+        "rer": "2025-07-31",
+        "rtc": "2025-08-22",
+        "pcc": null
+      },
+
+      "durations_days": {
+        "start_to_rer": 266,
+        "rec_to_rer": 31,
+        "rec_to_rtc": 53,
+        "rtc_to_pcc": null,
+        "transport_awarded_to_completed": 18
+      },
+
+      "anomalies": {
+        "missing_required_milestones": [
+          "Building Permit Approved (A)",
+          "NEPA Complete (A)"
+        ],
+        "extreme_duration_flags": [
+          "RTC→PCC > 300 days (in-progress)"
+        ],
+        "gating_violations": []
+      }
+    },
+
+    {
+      "fuze_project_id": "ID_ABCDEFG123",
+      "site_name": "SITENAME_123",
+      "local_market": "LOCALMARKE_001",
+      "county": "COUNTY_010",
+      "site_candidate_type": "Colocation",
+      "structure_owner": "Owner_010",
+      "vendor_site_acquisition": "VENDORSITE_101",
+      "vendor_construction_manager_company": "VENDORCONS_020",
+      "transport_vendor": "TRANSPORTV_001",
+      "status": "Active",
+
+      "risk": {
+        "is_rer_at_risk": false,
+        "rer_past_due_days": 0,
+        "risk_reasons": [],
+        "risk_level": "green"
+      },
+
+      "dates": {
+        "project_start": "2025-03-01",
+        "rec": "2025-05-10",
+        "rer": "2025-05-20",
+        "rtc": "2025-06-01",
+        "pcc": "2025-07-01"
+      },
+
+      "durations_days": {
+        "start_to_rer": 80,
+        "rec_to_rer": 10,
+        "rec_to_rtc": 22,
+        "rtc_to_pcc": 30,
+        "transport_awarded_to_completed": 9
+      },
+
+      "anomalies": {
+        "missing_required_milestones": [],
+        "extreme_duration_flags": [],
+        "gating_violations": []
+      }
+    }
+  ],
+
+  "aggregates": {
+    "vendors": [
+      {
+        "name": "VENDORSITE_146",
+        "role": "Site Acquisition",
+        "kpi": "REC→RTC",
+        "median_days": 74,
+        "variance_vs_market_median": 12.4
+      }
+    ],
+    "structure_owners": [
+      {
+        "name": "Owner_089",
+        "kpi": "REC→RTC",
+        "median_days": 83,
+        "variance_vs_market_median": 18.2
+      }
+    ],
+    "counties": [
+      {
+        "county": "COUNTY_018",
+        "avg_start_to_rer_days": 112.7,
+        "median_start_to_rer_days": 108,
+        "count": 42
+      }
+    ]
+  }
+}

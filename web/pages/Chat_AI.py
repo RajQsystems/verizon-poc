@@ -1,4 +1,6 @@
 import streamlit as st
+from utils.response_builder import display_response
+import json
 
 # Page configuration
 st.set_page_config(
@@ -43,39 +45,58 @@ st.title("🤖 Agentic Assistant")
 st.caption("Ask me anything and I'll try to help")
 
 # Display chat messages
-chat_container = st.container()
-with chat_container:
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            if message.get("is_code", False):
-                st.code(message["content"], language="text")
-            else:
-                st.markdown(message["content"])
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        if message.get("is_code", False):
+            st.code(message["content"], language="text")
+        elif message["role"] == "assistant" and isinstance(message["content"], dict):
+            st.markdown(message["content"]["summary"])
+            if message["content"]["df"] is not None:
+                st.dataframe(message["content"]["df"], use_container_width=True)
+        else:
+            st.markdown(message["content"])
 
 # User input
 if prompt := st.chat_input("Type your message here..."):
-    # Add user message to chat history
+    # Add user message
     st.session_state.messages.append({"role": "user", "content": prompt})
 
     # Display user message
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Generate assistant response (LOCAL LOGIC instead of API)
+    # Assistant response
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         message_placeholder.markdown("Thinking ⏳")
 
-        # Simple placeholder logic
+        # Default assistant response
+        assistant_content = None
+
         if "hello" in prompt.lower():
-            assistant_response = "Hello there👋!"
+            assistant_content = "Hello there👋!"
         else:
-            assistant_response = f"I received your message: _{prompt}_"
+            # Read JSON and generate structured response
+            with open("utils/response.json", "r") as f:
+                sample_data = json.load(f)
+            if sample_data:
+                summary, table = display_response(sample_data)
+                assistant_content = {"summary": summary, "df": table}
+            else:
+                assistant_content = f"I received your message: _{prompt}_"
 
-        # Render assistant response
-        message_placeholder.markdown(assistant_response, unsafe_allow_html=True)
+        # Clear the "Thinking" placeholder
+        message_placeholder.empty()  # <-- This removes the "Thinking ⏳" text
 
-    # Store assistant response
-    st.session_state.messages.append(
-        {"role": "assistant", "content": assistant_response}
-    )
+        # Render the response
+        if isinstance(assistant_content, dict):
+            st.markdown(assistant_content["summary"])
+            if assistant_content["df"] is not None:
+                st.dataframe(assistant_content["df"], use_container_width=True)
+        else:
+            st.markdown(assistant_content)
+
+        # Store in session state
+        st.session_state.messages.append(
+            {"role": "assistant", "content": assistant_content}
+        )
