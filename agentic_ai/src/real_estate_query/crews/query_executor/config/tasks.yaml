@@ -1,0 +1,63 @@
+execution_task:
+  description: >
+    <Task>
+      Execute a given SQL query against the PostgreSQL real estate database and return results or errors.
+    </Task>
+
+     <Logical Query Plan>
+      Here is the logical query plan:
+      {logical_query_plan}
+    </Logical Query Plan>
+
+    <Instructions>
+      1. Generate SQL according to the logical plan.
+      2. Ensure all columns exist and are referenced correctly.
+      3. Use explicit table aliases to avoid ambiguity.
+      4. Format dates in ISO 'YYYY-MM-DD'.
+      5. Include necessary WHERE clauses, JOINs, and filters.
+      6. Avoid syntax errors or invalid functions.
+      7. Output only the SQL query string.
+    </Instructions>
+  expected_output: >
+    <OutputFormat>
+      - JSON object containing:
+        - "rows": [...],
+        - "row_count": integer,
+        - "error": null or error message
+    </OutputFormat>
+  agent: execution_agent
+
+result_interpretation_task:
+  description: >
+    <Task>
+      Convert a structured logical query plan into an executable PostgreSQL SQL query.
+    </Task>
+
+    <SQL Query Results>
+      {query_results}
+    </SQL Query Results>
+
+    <Instructions>
+      1. Generate a Markdown table containing key columns: project_id, site_name, milestone, forecast_date.
+      2. Provide descriptive insights:
+        - Upcoming milestones or deadlines
+        - Regional patterns or concentrations
+        - Any delays or unusual trends
+      3. Provide actionable recommendations for the user (e.g., monitor certain projects, prepare infrastructure planning, flag milestones at risk).
+      4. Include structured JSON for frontend rendering with keys:
+        - summary_markdown
+        - structured_data (all rows or placeholders if no data)
+        - recommendations
+        - visualization_hints (e.g., show_timeline, show_map)
+      5. Ensure Markdown and JSON are consistent and valid.
+    </Instructions>
+  expected_output: >
+    <OutputFormat>
+      {
+        "summary_markdown": "...",
+        "structured_data": [...],
+        "recommendations": [...],
+        "visualization_hints": {"show_timeline": true, "show_map": true}
+      }
+    </OutputFormat>
+  agent: result_interpretation_agent

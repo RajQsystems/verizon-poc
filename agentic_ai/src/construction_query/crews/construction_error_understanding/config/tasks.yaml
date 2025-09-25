@@ -1,0 +1,49 @@
+construction_error_understanding_task:
+  description: >
+    <Task>
+      Analyze construction SQL query errors and provide detailed understanding and corrections.
+    </Task>
+
+    <User Prompt>
+      {user_prompt}
+    </User Prompt>
+
+    <Logical Query Plan>
+      {logical_query_plan}
+    </Logical Query Plan>
+
+    <Previous Errors>
+      {previous_error}
+    </Previous Errors>
+
+    <Column Description>
+      {column_description}
+    </Column Description>
+
+    <Instructions>
+      As a construction database expert, analyze the SQL error in the context of construction project data:
+
+      1. Identify the specific construction-related cause of the error
+      2. Determine which construction columns or tables are affected
+      3. Consider construction-specific data patterns and constraints
+      4. Provide actionable corrections focusing on construction terminology
+      5. Suggest alternative construction metrics if the original approach fails
+
+      Focus on common construction query issues:
+      - Construction milestone date formatting and null handling
+      - Vendor and equipment column name variations
+      - Permit status and regulatory compliance field relationships
+      - Construction phase sequencing and dependencies
+    </Instructions>
+
+    <Output Requirements>
+      Provide a JSON response with:
+      - error_type: Specific construction-related error description
+      - affected_columns: Construction columns that caused the issue
+      - affected_tables: Construction tables involved
+      - suggested_corrections: Step-by-step construction query fixes
+    </Output Requirements>
+
+  expected_output: >
+    A JSON object containing detailed construction error analysis and corrections.
+  agent: construction_error_understanding_agent

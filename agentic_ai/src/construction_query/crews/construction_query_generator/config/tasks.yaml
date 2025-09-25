@@ -1,0 +1,192 @@
+construction_query_interpretation_task:
+  description: >
+    <Task>
+      Convert natural language construction-related user requests into a clear, structured logical query plan. 
+    </Task>
+
+    <Available Tools>
+      You have access to the ConstructionQueryTool for executing SQL queries against construction data 
+      and retrieving distinct values from construction columns for IN queries.
+    </Available Tools>
+
+    Today's date is {date}.
+
+    <User Request>
+      Here is the user's original construction-related request:
+      {user_prompt}
+    </User Request>
+
+    <Column Description>
+      You are provided with the column description of **projects_encoded** table focusing on construction-related columns:
+      {column_description}
+    </Column Description>
+
+    <Previous Execution Error>
+      {previous_error}
+    </Previous Execution Error>
+
+    <Audience>
+      Your audience is a SQL query generator that will use your logical plan to create accurate construction SQL queries.
+    </Audience>
+
+    <Instructions>
+      Think like a construction project analyst and break down the user's request into logical steps for SQL translation.
+
+      Focus on construction-specific aspects:
+      - Construction milestones and phases (e.g., site preparation, permitting, equipment installation)
+      - Vendor management and performance tracking
+      - Equipment delivery and installation dates
+      - Permit status and regulatory compliance
+      - Site readiness indicators
+      - Construction timeline analysis
+
+      If Previous Error is not None, consider why the previous execution failed and adjust accordingly:
+      - Avoid previous mistakes
+      - Add construction-specific filters or clarify construction terminology
+      - Suggest alternative construction metrics if relevant
+
+      1. Analyze construction data relevant to the user's request
+      2. Determine construction-specific filters, aggregations, joins, groupings, and ordering
+      3. When performing IN queries on construction columns, query for distinct values first
+      4. Resolve ambiguities using construction column descriptions
+      5. Mark fields as 'needs_clarification' if construction terminology is ambiguous
+    </Instructions>
+
+    <Show Your Thinking>
+      After analyzing the construction request, provide a detailed breakdown:
+      - What construction-related tables did I identify?
+      - What construction columns are necessary for selection or aggregation?
+      - What construction metrics or KPIs are needed?
+      - Do I have enough construction context to proceed?
+    </Show Your Thinking>
+
+    <Examples>
+      Here are examples of good construction logical query plans:
+
+      **Example 1 (Construction milestones by vendor):**
+        {
+          "tables": ["projects_encoded"],
+          "columns": ["construction_gc_vendor", "site_name", "build_construction_completed_a"],
+          "filters": [
+            {
+              "column": "build_construction_completed_a",
+              "operator": "IS NOT NULL",
+              "value": null
+            }
+          ],
+          "aggregations": [
+            {
+              "column": "fuze_project_id",
+              "type": "COUNT",
+              "alias": "completed_projects"
+            }
+          ],
+          "joins": [],
+          "group_by": ["construction_gc_vendor"],
+          "order_by": ["completed_projects DESC"]
+        }
+
+      **Example 2 (Equipment delivery delays):**
+        {
+          "tables": ["projects_encoded"],
+          "columns": ["site_name", "equip_ordered_a", "equip_received_a"],
+          "filters": [
+            {
+              "column": "equip_ordered_a",
+              "operator": "IS NOT NULL",
+              "value": null
+            },
+            {
+              "column": "equip_received_a",
+              "operator": "IS NOT NULL",
+              "value": null
+            }
+          ],
+          "case_statements": [
+            {
+              "conditions": [
+                {
+                  "condition": "TO_DATE(equip_received_a, 'YYYY-MM-DD') - TO_DATE(equip_ordered_a, 'YYYY-MM-DD') > 30",
+                  "value": "'Delayed'"
+                },
+                {
+                  "condition": "ELSE",
+                  "value": "'On Time'"
+                }
+              ],
+              "alias": "delivery_status"
+            }
+          ]
+        }
+    </Examples>
+  expected_output: >
+    <Output Format>
+    {{
+        "tables": "All relevant construction tables needed for the query",
+        "columns": "Specific construction columns to be selected or aggregated",
+        "filters": "Construction-specific conditions to filter the data",
+        "aggregations": "Any construction metrics aggregations needed (e.g., SUM, COUNT)",
+        "joins": "Details of any joins between construction-related tables",
+        "group_by": "Construction columns to group results by",
+        "order_by": "Construction columns to order results by",
+        "unions": "Details of any unions for construction data if applicable",
+        "case_statements": "Construction-specific case statements if applicable",
+    }}
+    </Output Format>
+  agent: construction_query_interpretation_agent
+
+construction_query_generation_task:
+  description: >
+    <Task>
+      Convert structured construction query plan into a syntactically correct, optimized Postgres SQL query.
+    </Task>
+
+    <Query Plan>
+      {logical_query_plan}
+    </Query Plan>
+
+    <Column Description>
+      {column_description}
+    </Column Description>
+
+    Today's date is {date}.
+
+    <Instructions>
+      Generate a construction-focused SQL query that fulfills the user's request:
+      1. Generate only one SQL query for the construction plan
+      2. Use explicit JOIN types (INNER, LEFT, RIGHT) as indicated
+      3. Apply all construction-specific filters, aggregations, GROUP BY, and ORDER BY accurately
+      4. Optimize for construction data performance without changing results
+      5. Return ONLY the SQL query, nothing else
+      6. Ensure all construction column identifiers match the database exactly
+    </Instructions>
+
+    <Examples>
+      **Example Construction Query:**
+        SELECT 
+            construction_gc_vendor,
+            COUNT(fuze_project_id) as completed_projects,
+            AVG(CASE 
+                WHEN build_construction_completed_a IS NOT NULL 
+                THEN TO_DATE(build_construction_completed_a, 'YYYY-MM-DD') - TO_DATE(project_started_milestone_a, 'YYYY-MM-DD')
+                ELSE NULL 
+            END) as avg_construction_days
+        FROM projects_encoded
+        WHERE build_construction_completed_a IS NOT NULL
+          AND project_started_milestone_a IS NOT NULL
+          AND construction_gc_vendor IS NOT NULL
+        GROUP BY construction_gc_vendor
+        ORDER BY completed_projects DESC;
+    </Examples>
+  expected_output: >
+    <Output Format>
+      SELECT c.column1, c.column2, COUNT(c.construction_field) AS total_construction
+      FROM projects_encoded c
+      WHERE c.construction_status = 'completed'
+      GROUP BY c.column1, c.column2
+      ORDER BY total_construction DESC;
+    </Output Format>
+  agent: construction_query_generation_agent
+  context:
+    - construction_query_interpretation_task
+  output_file: construction_query.sql

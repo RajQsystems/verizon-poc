@@ -1,0 +1,67 @@
+query_planner_task:
+  description: >
+    <Task>
+      Analyze SQL query results strictly in the context of the user's request, and produce both structured data and a Markdown description suitable for frontend rendering.
+    </Task>
+
+    <User Request>
+      Here is the user's original request:
+      {user_prompt}
+    </User Request>
+
+    <Column Description>
+      You are provided with the column description of **projects_encoded** table:
+      {column_description}
+    </Column Description>
+
+    <Previous Execution Error>
+      {previous_error}
+    </Previous Execution Error>
+
+    <Instructions>
+      1. Break down the user request into logical entities, such as Projects, Sites, Milestones, and Forecast Dates.
+      2. Identify any filters, date ranges, or conditions mentioned in the request (e.g., upcoming milestones, specific sites, or milestone types).
+      3. Consider any prior errors and ensure the new plan avoids repeating those issues.
+      4. Map the logical entities to actual table names and column names in the schema.
+      5. Organize the plan into a clear, structured format describing which tables, columns, and filters will be used.
+    </Instructions>
+  expected_output: >
+    <OutputFormat>
+      - Provide a structured JSON plan only.
+      - Include: table names, selected columns, filters, join conditions, and any date ranges.
+      - Do not generate SQL at this stage.
+    </OutputFormat>
+  agent: result_interpretation_agent
+
+query_generator_task:
+  description: >
+    <Task>
+      Convert a structured logical query plan into an executable PostgreSQL SQL query.
+    </Task>
+
+    <Logical Query Plan>
+      Here is the logical query plan:
+      {logical_query_plan}
+    </Logical Query Plan>
+
+    <Column Description>
+      You are provided with the column description of **projects_encoded** table:
+      {column_description}
+    </Column Description>
+
+    <Instructions>
+      1. Generate SQL according to the logical plan.
+      2. Ensure all columns exist and are referenced correctly.
+      3. Use explicit table aliases to avoid ambiguity.
+      4. Format dates in ISO 'YYYY-MM-DD'.
+      5. Include necessary WHERE clauses, JOINs, and filters.
+      6. Avoid syntax errors or invalid functions.
+      7. Output only the SQL query string.
+    </Instructions>
+  expected_output: >
+    <OutputFormat>
+      - Provide a single executable PostgreSQL SQL query string.
+      - Ensure the SQL is syntactically correct and adheres to PostgreSQL standards.
+      - Do not include any explanations or additional text.
+    </OutputFormat>
+  agent: query_generator_agent

@@ -1,0 +1,51 @@
+construction_result_interpretation_task:
+  description: >
+    <Task>
+      Interpret construction SQL query results and provide comprehensive analysis with construction-specific insights.
+    </Task>
+
+    <User Prompt>
+      {user_prompt}
+    </User Prompt>
+
+    <Logical Query Plan>
+      {logical_query_plan}
+    </Logical Query Plan>
+
+    <Query Results>
+      {query_results}
+    </Query Results>
+
+    <Column Description>
+      {column_description}
+    </Column Description>
+
+    <Instructions>
+      As a construction data expert, analyze the results with focus on:
+
+      1. Construction milestone analysis and timeline implications
+      2. Equipment delivery performance and potential bottlenecks
+      3. Permit compliance status and regulatory risks
+      4. Vendor performance patterns and recommendations
+      5. Site readiness indicators and construction preparedness
+      6. Cost implications and budget considerations
+      7. Risk assessment and mitigation strategies
+
+      Provide insights that are:
+      - Actionable for construction teams and project managers
+      - Relevant to construction timelines and dependencies
+      - Focused on construction-specific KPIs and metrics
+      - Aligned with construction industry best practices
+    </Instructions>
+
+    <Output Requirements>
+      Generate a JSON response with:
+      - summary: Executive summary focusing on construction insights
+      - data: Structured construction data with relevant columns
+      - recommendations: Specific construction management recommendations
+      - visualization_hints: Suggestions for construction data visualization
+    </Output Requirements>
+
+  expected_output: >
+    A comprehensive JSON analysis of construction query results with actionable construction insights.
+  agent: construction_result_interpretation_agent
