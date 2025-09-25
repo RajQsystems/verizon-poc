@@ -9,6 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from agentic_ai.src.sql_query.crews import (
     SQLResultInterpreterCrew,
     SQLQueryGeneratorCrew,
+    SQLErrorUnderstandingCrew,
 )
 from agentic_ai.src.sql_query.schemas import SQLQueryState
 from backend.app.db.session import AsyncSessionLocal
@@ -25,7 +26,7 @@ class SQLQueryGeneratorFlow(Flow[SQLQueryState]):
         self.state.column_description = column_description
         return column_description
 
-    @listen(or_("read_table_description", "regenerate_sql_query"))
+    @listen(or_("read_table_description", "analyze_sql_error"))
     async def generate_sql_query(self, column_description):
         date_now = self._get_current_datetime()
 
@@ -35,14 +36,14 @@ class SQLQueryGeneratorFlow(Flow[SQLQueryState]):
                 "column_description": column_description,
                 "user_prompt": self.state.user_prompt,
                 "date": date_now,
-                "previous_error": self.state.previous_error,
+                "previous_error": self.state.previous_error_analysis,
             }
         )
         self.state.logical_query_plan = result.tasks_output[0].raw
         return result.raw
 
-    @router("generate_sql_query")
-    async def handle_query_routing(self, sql_query: str):
+    @listen("generate_sql_query")
+    async def run_sql_query(self, sql_query: str):
         if self.state.retry_count >= MAX_RETRIES:
             return "max_retries_exceeded"
         self.state.retry_count += 1
@@ -63,12 +64,31 @@ class SQLQueryGeneratorFlow(Flow[SQLQueryState]):
 
                     self.state.query_results = processed_results
 
-            self.state.previous_error = None
-            return "interpret_result"
+            self.state.has_sql_error = False
 
         except SQLAlchemyError as e:
-            self.state.previous_error = str(e)
-            return "regenerate_sql_query"
+            self.state.previous_error.append(str(e))
+            self.state.has_sql_error = True
+
+    @router("run_sql_query")
+    def handle_query_routing(self):
+        if self.state.has_sql_error:
+            return "analyze_sql_error"
+        return "interpret_result"
+
+    @listen("analyze_error")
+    async def analyze_sql_error(self):
+        crew = SQLErrorUnderstandingCrew()
+        result = await crew.crew().kickoff_async(
+            inputs={
+                "user_prompt": self.state.user_prompt,
+                "logical_query_plan": self.state.logical_query_plan,
+                "previous_error": self.state.previous_error,
+                "column_description": self.state.column_description,
+            }
+        )
+        self.state.previous_error_analysis = result.json_dict or {}
+        return result.json_dict
 
     @listen("interpret_result")
     async def generate_sql_interpretation(self):

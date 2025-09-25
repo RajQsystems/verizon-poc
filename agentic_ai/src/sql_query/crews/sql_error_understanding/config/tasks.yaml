@@ -1,0 +1,54 @@
+error_understanding_task:
+  description: >
+    <Task>
+      Analyze a failed SQL query and its error message.
+      Return structured information about the error so the Query Planner can avoid repeating the same mistake.
+    </Task>
+
+    <Context>
+      You are provided with the list of error that have occured during SQL execution, the logical query plan, and the table schema.:
+        - **logical_query_plan**: The logical query plan that outlines the steps taken to generate the SQL query.
+        - **table_schema**: Column names and descriptions.
+        - **previous_error**: A list of error messages from previous SQL execution attempts, if any.
+
+      <Logical Query Plan>
+        {logical_query_plan}
+      </Logical Query Plan>
+
+      <Raw SQL Errors>
+        {previous_error}
+      </Raw SQL Errors>
+
+      <TableSchema>
+        <Columns>
+          {column_description}
+        </Columns>
+      </TableSchema>
+    </Context>
+    
+    <Audience>
+      SQL Query Planner component of an AI system.
+    </Audience>
+
+    <Instructions>
+      1. Identify the error type (missing column, syntax error, type mismatch, ambiguous reference, invalid function, etc.) from the SQLAlchemy error message and stack trace.
+      2. Identify affected columns and tables.
+      3. Provide structured suggested corrections that the Query Planner can directly apply.
+      4. Do not generate human-friendly explanations; output must be fully machine-readable JSON.
+    </Instructions>
+  expected_output: >
+    <OutputFormat>
+      {
+        "error_type": "the exact reason of the error as specified in SQLAlchemy error message and stack trace",
+        "affected_columns": ["list of columns that caused the error"],
+        "affected_tables": ["list of table names if applicable, else []"],
+        "suggested_corrections": [
+          {
+            "action": "the corresponding action to fix the error, e.g., replace_column, add_alias, fix_type, etc.",
+            "from": "the original column/table/function that caused the error",
+            "to": "the corrected column/table/function, if applicable"
+          }
+        ]
+      }
+    </OutputFormat>
+  agent: result_interpretation_agent

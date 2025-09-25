@@ -194,9 +194,7 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
-
-
-*.html
+# Streamlit
 .env
 .streamlit
 
