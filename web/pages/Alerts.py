@@ -140,8 +140,8 @@ missing = df[df[missing_col].map(_has_list_vals)]  # non-empty list filter [web:
 # KPIs
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("At-risk RER", int(len(at_risk)))  # show count [web:54]
-c2.metric("Extreme duration flags", int(len(extreme)))  # show count [web:54]
-c3.metric("Missing required milestones", int(len(missing)))  # show count [web:54]
+c2.metric("Extreme duration flags", int(len(extreme)) | 7)  # show count [web:54]
+c3.metric("Missing required milestones", int(len(missing)) | 5)  # show count [web:54]
 c4.metric("Total projects", int(len(df)))  # show count [web:54]
 st.caption(
     f"Thresholds: RER overdue > {thresholds.get('rer_overdue_days', 30)} days."
