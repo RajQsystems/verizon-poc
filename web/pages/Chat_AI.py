@@ -1,6 +1,24 @@
+import requests
 import streamlit as st
+import os
 from utils.response_builder import display_response
 import json
+from dotenv import load_dotenv
+
+load_dotenv()
+BASE_URL = os.getenv("BASE_URL")
+API_URL = f"{BASE_URL}/api/v1/query"
+
+
+@st.cache_data(ttl=300)
+def fetch_data(user_query: str = ""):
+    payload = {"user_query": user_query}
+    headers = {"Content-Type": "application/json"}
+
+    r = requests.post(API_URL, json=payload, headers=headers, timeout=300)
+    r.raise_for_status()
+    return r.json()
+
 
 # Page configuration
 st.set_page_config(
@@ -77,10 +95,9 @@ if prompt := st.chat_input("Type your message here..."):
             assistant_content = "Hello there👋!"
         else:
             # Read JSON and generate structured response
-            with open("utils/response.json", "r") as f:
-                sample_data = json.load(f)
-            if sample_data:
-                summary, table = display_response(sample_data)
+            response = fetch_data(prompt)
+            if response:
+                summary, table = display_response(response)
                 assistant_content = {"summary": summary, "df": table}
             else:
                 assistant_content = f"I received your message: _{prompt}_"

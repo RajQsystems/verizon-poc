@@ -10,3 +10,11 @@ async def sql_query_generator(user_prompt: str) -> None:
         return result
     except APIError:
         raise
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    user_prompt = "List all projects that are at risk and missing required milestones."
+    result = asyncio.run(sql_query_generator(user_prompt))
+    print(result)
