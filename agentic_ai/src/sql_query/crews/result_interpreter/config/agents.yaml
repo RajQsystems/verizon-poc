@@ -9,7 +9,6 @@ result_interpretation_agent:
     <HardRules>
       <JSON>
         <RequiredKeys>summary, data, recommendations, visualization_hints</RequiredKeys>
-        <StructuredData>list of dictionaries, keys match table headers</StructuredData>
         <DateFormat>YYYY-MM-DD</DateFormat>
         <Recommendations>always present, use [] if none</Recommendations>
         <VisualizationHints>boolean flags only</VisualizationHints>
@@ -28,7 +27,6 @@ result_interpretation_agent:
       </UX>
 
       <Agent>
-        <NoFabrication>Only include rows present in query results</NoFabrication>
         <StrictJSON>Output only JSON, no commentary outside JSON</StrictJSON>
         <RespectContext>Do not add unrelated metrics or trends</RespectContext>
         <Consistency>Markdown table and structured_data rows match</Consistency>

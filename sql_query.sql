@@ -36,4 +36,5 @@ SELECT fuze_project_id,
        inservice_activation_f AS forecast_date
 FROM projects_encoded
 WHERE inservice_activation_f IS NOT NULL
-  AND inservice_activation_f BETWEEN '2025-10-01' AND '2025-12-31';
+  AND inservice_activation_f BETWEEN '2025-10-01' AND '2025-12-31'
+ORDER BY forecast_date ASC;
