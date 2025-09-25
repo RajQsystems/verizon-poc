@@ -5,11 +5,12 @@ from backend.app.core.config import settings
 
 
 DATABASE_URL = URL.create(
-    drivername="mysql+asyncmy",
+    drivername="postgresql+asyncpg",
     username=settings.DATABASE_USERNAME,
     password=settings.DATABASE_PASSWORD,
     host=settings.DATABASE_HOST,
     database=settings.DATABASE_NAME,
+    port=settings.DATABASE_PORT,
 )
 
 engine = create_async_engine(DATABASE_URL, echo=True, future=True)

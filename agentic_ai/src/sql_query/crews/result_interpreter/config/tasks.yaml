@@ -1,0 +1,68 @@
+result_interpretation_task:
+  description: >
+    <Task>
+      Analyze SQL query results strictly in the context of the user's request, and produce both structured data and a Markdown description suitable for frontend rendering.
+    </Task>
+
+    <User Request>
+      Here is the user's original request:
+      {user_prompt}
+    </User Request>
+
+    <Context>
+      You are provided with the following context to assist in interpreting the SQL query results:
+        - **logical_query_plan**: The logical query plan that outlines the steps taken to generate the SQL query.
+        - **sql_query_results**: The results returned from executing the SQL query.
+        - **table_schema**: Column names and descriptions.
+
+      <Logical Query Plan>
+        {logical_query_plan}
+      </Logical Query Plan>
+
+      <SQL Query Results>
+        {query_results}
+      </SQL Query Results>
+
+      <TableSchema>
+        <Columns>
+          {column_description}
+        </Columns>
+      </TableSchema>
+    </Context>
+
+    <Tone>
+      Professional and clear, suitable for business stakeholders.
+    </Tone>
+    
+    <Audience>
+      Business analysts and decision-makers; output should be understandable by non-technical users.
+    </Audience>
+
+    <Instructions>
+      1. Analyze data if available; otherwise, rely on schema and aggregates.
+      2. Provide a **well-formatted Markdown summary**:
+         - Use headings for sections.
+         - Avoid h1, h2 tags; start with h3 and suitable headers per section.
+         - Use paragraphs for explanations.
+         - Use **bold** for key metrics/terms and *italics* for emphasis.
+         - Use bullet points or numbered lists for trends, recommendations, or anomalies.
+      3. Use the <SQL Query Results> and <Logical Query Plan> to just generate the context rich summary.
+      4. Provide actionable recommendations and visualization hints for frontend.
+      5. **Ensure all outputs follow hard rules:** ISO dates, consistent keys, safe Markdown, valid JSON.
+    </Instructions>
+  expected_output: >
+    <OutputFormat>
+      {
+        "summary": "A comprehensive Markdown summary of the SQL query results, formatted with headings, paragraphs, bold/italics, and bullet points as needed.",
+        "data": {
+          "columns": "list of column names",
+        },
+        "recommendations": ["List of actionable recommendations based on the data analysis"],
+        "visualization_hints": {
+          "table": true,
+          "timeline_chart": true,
+          "bar_chart": false
+        }
+      }
+    </OutputFormat>
+  agent: result_interpretation_agent
