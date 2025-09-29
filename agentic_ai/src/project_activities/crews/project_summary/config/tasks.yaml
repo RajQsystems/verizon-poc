@@ -1,0 +1,204 @@
+fetch_project_summary_task:
+  description: >
+    Call the backend /projects/{project_id}/summary endpoint and return the
+    structured payload as 'overview'. Do not mutate fields. If any top-level
+    key is missing, include a 'notes' key to highlight gaps.
+  input_schema:
+    required:
+      - project_id
+    properties:
+      project_id:
+        type: string
+        description: FUZE surrogate project ID
+  steps:
+    - "Invoke GET /projects/{project_id}/summary"
+    - "Validate presence of: project, milestones, anomalies, cycles"
+    - "Return the raw JSON as 'overview' plus a 'notes' list for any gaps"
+  expected_output: >
+    {
+      "overview": {
+        "project": {...},
+        "milestones": {...},
+        "anomalies": {...},
+        "cycles": [...]
+      },
+      "notes": []
+    }
+  agent: project_overview_agent
+
+milestone_analysis_task:
+  description: >
+    Transform the milestones section into analytics-ready signals: counts,
+    delayed clusters by agent and milestone_name, top 5 late items with days,
+    and early hypotheses on root cause using dependency hints.
+  input_schema:
+    required: [overview]
+    properties:
+      overview:
+        type: object
+        description: Output of fetch_project_summary_task
+  steps:
+    - "Separate healthy vs delayed from overview.milestones"
+    - "Group delayed by agent_id and milestone name"
+    - "Select top 5 delayed by duration_days"
+    - "Flag weird cases: negative duration, missing actual_date for past planned_date"
+  expected_output: >
+    {
+      "summary": {"total": 16, "delayed": 8, "healthy": 8},
+      "delayed_by_agent": [{"agent_id": 3, "count": 4}],
+      "top_late": [{"milestone_id": 1553, "name": "Project Started", "delay_days": 29}],
+      "weird_cases": [{"milestone_id": 1561, "reason": "Missing actual_date past plan"}]
+    }
+  agent: milestone_diagnostic_agent
+  context:
+    - fetch_project_summary_task
+
+anomaly_triage_task:
+  description: >
+    Build a risk register from overview.anomalies.details. Prioritize High,
+    summarize by type, and produce a crisp 'so-what' for leadership.
+  input_schema:
+    required: [overview]
+    properties:
+      overview:
+        type: object
+  steps:
+    - "Group by severity and type"
+    - "Pull top examples for High severity (e.g., Zoning Missing Date)"
+    - "Create a risk_score heuristic: High=3, Medium=2, Low=1"
+    - "Compute total_risk_score and top_risks list"
+  expected_output: >
+    {
+      "counts_by_severity": {"High": 1, "Medium": 0, "Low": 0},
+      "counts_by_type": {"Missing Date": 1},
+      "risk_score": 3,
+      "top_risks": [{"anomaly_id": 16, "type": "Missing Date", "severity": "High"}]
+    }
+  agent: anomaly_triage_agent
+  context:
+    - fetch_project_summary_task
+
+cycle_benchmark_task:
+  description: >
+    Analyze cycles array. For each cycle: compute breach = variance > SLA(days)
+    where SLA defaults to 20 unless per-label SLA is provided. Return a compact
+    table plus highlights.
+  input_schema:
+    required: [overview]
+    properties:
+      overview:
+        type: object
+      sla_days:
+        type: object
+        description: >
+          Optional per-cycle SLA, e.g. {"REC→RTC": 25, "Transport Contract→Delivery": 15}
+
+  steps:
+    - "For each cycle, lookup SLA or default 20"
+    - "breach = variance > SLA"
+    - "Return list of {label, planned, actual, variance, sla, breach}"
+  expected_output: >
+    {
+      "cycles": [
+        {"label": "REC→RTC", "planned": 60, "actual": 85, "variance": 25, "sla": 20, "breach": true}
+      ],
+      "breaches": 1
+    }
+  agent: cycle_benchmark_agent
+  context:
+    - fetch_project_summary_task
+
+zoning_focus_task:
+  description: >
+    Perform a zoning-first review. If anomalies refer to Zoning or milestones
+    named 'Zoning Submitted/Approved' are delayed or missing actuals, capture
+    blockers and recommend the next best action.
+  input_schema:
+    required: [overview]
+    properties:
+      overview:
+        type: object
+  steps:
+    - "Scan delayed_milestones for names containing 'Zoning'"
+    - "Scan anomalies for 'Zoning' in description or type"
+    - "If leasing milestone delays exist, link as upstream blocker"
+    - "Produce action_plan with concrete owners and timestamps"
+  expected_output: >
+    {
+      "zoning_findings": [{"milestone_id": 1561, "issue": "Missing Date"}],
+      "upstream_links": [{"blocker": "Leasing Executed", "status": "Delayed"}],
+      "action_plan": ["Confirm permit package completeness", "Escalate to county reviewer"]
+    }
+  agent: zoning_focus_agent
+  context:
+    - fetch_project_summary_task
+    - milestone_analysis_task
+    - anomaly_triage_task
+
+vendor_attribution_task:
+  description: >
+    Attribute delays to vendors where possible using milestone names and
+    known mappings (Transport/Construction/Leasing). Output a vendor risk
+    table ranked by delayed milestone count and narrative asks.
+  input_schema:
+    required: [overview]
+    properties:
+      overview:
+        type: object
+  steps:
+    - "Map milestone to vendor domain (Transport/Construction/Leasing)"
+    - "Count delayed milestones per vendor domain"
+    - "Draft asks for top offenders (e.g., delivery date, crew allocation)"
+  expected_output: >
+    {
+      "by_vendor_domain": [{"domain": "Transport", "delayed": 12}],
+      "asks": [{"domain": "Transport", "ask": "Firm delivery date and penalty acknowledgment"}]
+    }
+  agent: vendor_attribution_agent
+  context:
+    - fetch_project_summary_task
+    - milestone_analysis_task
+
+final_composition_task:
+  description: >
+    Integrate milestone, anomaly, cycle, zoning, and vendor attribution into a
+    single executive summary. Include a headline, top 3 risks, and next 3 actions.
+  input_schema:
+    required:
+      - milestone_analysis
+      - anomaly_analysis
+      - cycle_benchmark
+      - zoning_focus
+      - vendor_attribution
+    properties:
+      milestone_analysis: { type: object }
+      anomaly_analysis: { type: object }
+      cycle_benchmark: { type: object }
+      zoning_focus: { type: object }
+      vendor_attribution: { type: object }
+  steps:
+    - "Synthesize signals into 3 bullets for risks and 3 for actions"
+    - "Reference concrete milestones and anomaly IDs where relevant"
+    - "Be concise and executive-friendly"
+  expected_output: >
+    {
+      "headline": "Backend/API Vendor Delay Threatens MVP Milestone",
+      "top_risks": [
+        "Backend API integration delayed by vendor…",
+        "25-day delay in MVP Development…",
+        "Vendor dependency is a single point of failure"
+      ],
+      "next_actions": [
+        "Escalate to Backend/API Vendor…",
+        "Initiate contingency planning…",
+        "Increase monitoring cadence…"
+      ]
+    }
+
+  agent: meta_summary_agent
+  context:
+    - milestone_analysis_task
+    - anomaly_triage_task
+    - cycle_benchmark_task
+    - zoning_focus_task
+    - vendor_attribution_task

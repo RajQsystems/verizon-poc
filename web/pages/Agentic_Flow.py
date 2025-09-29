@@ -652,12 +652,12 @@ html_code_3 = """
 # Dropdown for selection
 page = st.selectbox(
     "Select a Page to Render:",
-    ["SQL Query Flow", "Construction Query Flow", "Real Estate Flow"],
+    ["Query Flow", "Construction Query Flow", "Real Estate Flow"],
     index=0,
 )
 
 # Render selected HTML
-if page == "SQL Query Flow":
+if page == "Query Flow":
     components.html(html_code_1, height=800, scrolling=True)
 elif page == "Construction Query Flow":
     components.html(html_code_2, height=800, scrolling=True)
