@@ -1,105 +1,97 @@
 import json
 import aiohttp
+from datetime import datetime, timezone
+from typing import List
 
 from crewai.flow import Flow, listen, start
-
 from agentic_ai.config.settings import settings
 from agentic_ai.exceptions import APIError
 from agentic_ai.src.project_activities.crews.project_summary.project_summary_crew import ProjectSummaryCrew
 from agentic_ai.src.project_activities.schemas.flow.project_summary import (
-    ProjectSummaryState,
-    ProjectSummaryResult,
+    ProjectSummaryState, ProjectSummaryResult, AgentRun
 )
-import re
+from agentic_ai.mapper import TASKS, AGENTS, TASK_TO_AGENT
 
+def _ts(): return datetime.now(timezone.utc).isoformat()
+
+def _log(state: ProjectSummaryState, step: str, message: str, payload=None):
+    state.trace.append({"time": _ts(), "step": step, "message": message, "payload": payload or {}})
 
 class ProjectSummaryFlow(Flow[ProjectSummaryState]):
     @start()
     async def fetch_project_summary(self):
-        """
-        Fetch raw project summary JSON from the backend API.
-        """
         url = f"{settings.API_BASE_URL}/api/v1/projects/{self.state.project_id}/summary"
-        print("url_value ",url)
+        _log(self.state, "fetch_project_summary:start", "Calling project summary endpoint", {"url": url})
 
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 body = await response.text()
                 if response.status != 200:
+                    _log(self.state, "fetch_project_summary:error", "Non-200 from backend",
+                         {"status": response.status, "body": body})
                     raise APIError(status_code=response.status, message=body)
 
                 data = await response.json()
-
-                # Always inject project_id so schema validation passes
                 data.setdefault("project_id", self.state.project_id)
-
-                # Save raw JSON into state for downstream steps
                 self.state.raw_project_summary = data
-                print("raw_data_008", data)
                 return data
 
     @listen("fetch_project_summary")
-    async def run_project_summary_pipeline(self, previous_result):
-        """
-        Pass the raw project summary into the Crew pipeline for analysis.
-        """
+    async def run_project_summary_pipeline(self, overview):
+        _log(self.state, "crew:start", "Starting ProjectSummaryCrew")
         crew = ProjectSummaryCrew()
-        print('crewcrew',crew)
         result = await crew.crew().kickoff_async(
-            inputs={
-                "project_id": self.state.project_id,
-                "overview": previous_result,
-            }
+            inputs={"project_id": self.state.project_id, "overview": overview}
         )
-        # crew result is usually a JSON-like string
-        return result.raw
 
+        runs: List[AgentRun] = []
+        for idx, out in enumerate(getattr(result, "tasks_output", []) or []):
+            task_key = getattr(out, "name", None) or f"task_{idx+1}"
+            agent_key = TASK_TO_AGENT.get(task_key, f"agent_{idx+1}")
+
+            runs.append(AgentRun(
+                task_key=task_key,
+                agent_key=agent_key,
+                display_name=f"{agent_key} — {task_key}",
+                output_raw=getattr(out, "raw", None),
+                output_json=getattr(out, "json_dict", None),
+                task_details=TASKS.get(task_key),
+                agent_details=AGENTS.get(agent_key),
+            ))
+
+        self.state.agents_debug = runs
+        _log(self.state, "crew:done", "Crew finished", {"tasks": len(runs)})
+        return getattr(result, "raw", result)
 
     @listen("run_project_summary_pipeline")
-    async def complete_project_summary(self, previous_result: str) -> ProjectSummaryResult:
+    async def complete_project_summary(self, previous_result) -> ProjectSummaryResult:
+        headline, risks, actions = "", [], []
+        raw_text = previous_result if isinstance(previous_result, str) else getattr(previous_result, "raw", str(previous_result))
+
         try:
-            parsed = json.loads(previous_result)
+            parsed = getattr(previous_result, "json_dict", None) or json.loads(raw_text)
             headline = parsed.get("headline", "")
             risks = parsed.get("top_risks", [])
             actions = parsed.get("next_actions", [])
         except Exception:
-            # Fallback: regex parse
-            headline_match = re.search(r"Headline:\s*(.*)", previous_result)
-            risks_block = re.search(r"Top 3 Risks:\s*(.*?)\n\n", previous_result, re.S)
-            actions_block = re.search(r"Next 3 Actions:\s*(.*?)\n\n", previous_result, re.S)
-
-            headline = headline_match.group(1).strip() if headline_match else ""
-            risks = [line.strip("0123456789. ") for line in (risks_block.group(1).splitlines() if risks_block else []) if line.strip()]
-            actions = [line.strip("0123456789. ") for line in (actions_block.group(1).splitlines() if actions_block else []) if line.strip()]
+            import re
+            m_head = re.search(r"Headline:\s*(.*)", raw_text)
+            headline = (m_head.group(1).strip() if m_head else "")
+            def _pull(title):
+                m = re.search(title + r":\s*(.*?)\n\n", raw_text, re.S)
+                return [ln.strip("0123456789. ").strip() for ln in (m.group(1).splitlines() if m else []) if ln.strip()]
+            risks, actions = _pull("Top 3 Risks"), _pull("Next 3 Actions")
 
         return ProjectSummaryResult(
             project_id=self.state.project_id,
             headline=headline,
             risks=risks,
             actions=actions,
-            raw_output=previous_result,
+            raw_output=raw_text,
+            trace=self.state.trace,
+            agents=self.state.agents_debug,
         )
 
-
-
 async def project_summary_generator(project_id: str) -> ProjectSummaryResult:
-    """
-    Kick off the ProjectSummaryFlow and return a ProjectSummaryResult.
-    """
     flow = ProjectSummaryFlow()
-    result: ProjectSummaryResult = await flow.kickoff_async(
-        inputs={"project_id": project_id}
-    )
-    return result
-
-
-# For manual testing
-if __name__ == "__main__":
-    import asyncio
-
-    async def main():
-        project_id = "ID_SAMPLE_PROJECT"
-        result = await project_summary_generator(project_id)
-        print(result)
-
-    asyncio.run(main())
+    return await flow.kickoff_async(inputs={"project_id": project_id})
