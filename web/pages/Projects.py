@@ -15,7 +15,7 @@ st.title("📊 Agentic Project Summary — Live Run Viewer")
 
 # --- Sidebar ---
 st.sidebar.header("Run a Summary")
-project_id = st.sidebar.text_input("Project ID", value="ID_0E758E28EC")
+project_id = st.sidebar.text_input("Project ID", value="ID_277EA56BE3")
 run_btn = st.sidebar.button("Run")
 
 # --- Layout placeholders ---
