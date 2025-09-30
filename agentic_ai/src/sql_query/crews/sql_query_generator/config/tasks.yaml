@@ -1,7 +1,7 @@
 query_interpretation_task:
   description: >
     <Task>
-      Convert natural language user requests into a clear,structured and logical query plan. 
+      Convert natural language user requests into a clear, structured and logical query plan.
     </Task>
 
     <Available Tools>
@@ -17,8 +17,72 @@ query_interpretation_task:
     </User Request>
 
     <Column Description>
-      You are provided with the column description of **projects_encoded** table:
-      {column_description}
+      You are provided with the column descriptions of the **Verizon POC schema**:
+
+      **1. Projects Table**
+        - project_id (VARCHAR(50), PK): Unique identifier for each project.
+        - market (VARCHAR(100)): Market name (e.g., Market A, Market B).
+        - site_type (VARCHAR(50)): Raw Land or Colocation.
+        - start_date (DATE): Actual project start.
+        - end_date_planned (DATE): Planned completion date.
+        - end_date_actual (DATE): Actual completion date.
+        - Use case: Compare planned vs. actual durations, group by market/site type, filter active vs. completed projects.
+
+      **2. Agents Table**
+        - agent_id (SERIAL, PK): Unique ID.
+        - agent_name (VARCHAR(100), unique): e.g., RF / Engineering, Real Estate / Leasing, Construction.
+        - description (TEXT): Narrative description of the agent’s role.
+        - Use case: Join to milestones to attribute tasks to specific functional groups.
+
+      **3. Milestones Table**
+        - milestone_id (SERIAL, PK).
+        - project_id (VARCHAR(50), FK → Projects).
+        - agent_id (INT, FK → Agents).
+        - milestone_name (VARCHAR(150)): Name of the milestone.
+        - planned_date (DATE): Scheduled milestone completion.
+        - actual_date (DATE): Actual completion date.
+        - status (VARCHAR(30)): Pending, In Progress, Complete, Delayed.
+        - duration_days (INT): Duration in days.
+        - anomaly_flag (BOOLEAN): Whether this milestone is anomalous.
+        - Use case: Track milestone delays, agent accountability, anomaly detection.
+
+      **4. Dependencies Table**
+        - dependency_id (SERIAL, PK).
+        - milestone_id (INT, FK → Milestones).
+        - prerequisite_id (INT, FK → Milestones).
+        - dependency_type (VARCHAR(30)): Prerequisite, Predecessor, Successor.
+        - Use case: Build milestone dependency graphs, detect out-of-order tasks.
+
+      **5. Vendors Table**
+        - vendor_id (SERIAL, PK).
+        - vendor_name (VARCHAR(150), unique).
+        - role (VARCHAR(100)): Vendor’s responsibility.
+        - Use case: Link vendors to milestones; analyze vendor contribution to delays.
+
+      **6. Milestone_Vendors Table (Join Table)**
+        - milestone_id (INT, FK → Milestones).
+        - vendor_id (INT, FK → Vendors).
+        - contribution (VARCHAR(255)): Notes on vendor role.
+        - Use case: Many-to-many link between milestones and vendors.
+
+      **7. Anomalies Table**
+        - anomaly_id (SERIAL, PK).
+        - milestone_id (INT, FK → Milestones).
+        - type (VARCHAR(100)): Missing Date, Long Duration, Vendor Delay, Out-of-Order Dependency.
+        - description (TEXT).
+        - severity (VARCHAR(20)): Low, Medium, High.
+        - detected_on (TIMESTAMP, default CURRENT_TIMESTAMP).
+        - Use case: QA monitoring, anomaly trend reporting, linking anomalies to projects/agents/vendors.
+
+      **8. Cycle_Times Table**
+        - cycle_id (SERIAL, PK).
+        - project_id (VARCHAR(50), FK → Projects).
+        - agent_start_id (INT, FK → Agents).
+        - agent_end_id (INT, FK → Agents).
+        - planned_duration (INT).
+        - actual_duration (INT).
+        - variance (INT).
+        - Use case: Analyze end-to-end cycle efficiency, compare planned vs. actual.
     </Column Description>
 
     <Previous Execution Error>
@@ -33,14 +97,14 @@ query_interpretation_task:
       Think like a SQL query planner and break down the user's request into a series of logical steps that can be translated into SQL.
 
       If <PreviousError> is not None, consider why the previous execution failed and adjust your logical plan accordingly:
-      
+
         - Avoid previous mistakes.
         - Add additional filters, clarify ambiguous fields, or restructure joins if needed.
         - Suggest alternative aggregations or columns if relevant.
 
       1. Analyze only data relevant to the user's request.
       2. Determine filters, aggregations, joins, groupings, and ordering.
-      3. Whenever you are performing **IN** query on a column, query the column to find the distinct values first.  
+      3. Whenever you are performing **IN** query on a column, query the column to find the distinct values first.
       4. Resolve ambiguities using column descriptions and table purposes.
       5. Mark field as 'needs_clarification' if ambiguous.
     </Instructions>
@@ -55,162 +119,7 @@ query_interpretation_task:
     </Show Your Thinking>
 
     <Examples>
-      Here are three examples of good logical query plans:
-
-      **Example 1 (for "Vendors with the highest forecast transport delivery delays"):**
-        {
-          "tables": ["projects_encoded"],
-          "columns": ["county"],
-          "filters": [
-            {
-              "column": "real_estate_released_a",
-              "operator": "IS NOT NULL",
-              "value": null
-            },
-            {
-              "column": "project_started_milestone_a",
-              "operator": "IS NOT NULL",
-              "value": null
-            }
-          ],
-          "aggregations": [
-            {
-              "column": "TO_DATE(real_estate_released_a, 'YYYY-MM-DD') - TO_DATE(project_started_milestone_a, 'YYYY-MM-DD')",
-              "type": "AVG",
-              "alias": "avg_rer_duration"
-            }
-          ],
-          "joins": [],
-          "group_by": ["county"],
-          "order_by": ["avg_rer_duration DESC"]
-        }
-
-      **Example 2 (for "Milestones forecasted to slip into next quarter (Q4 2025 example)")**
-        {
-          "tables": ["projects_encoded"],
-          "columns": ["fuze_project_id", "site_name", "milestone", "forecast_date"],
-          "filters": [
-            {
-              "column": "real_estate_released_f",
-              "operator": "IS NOT NULL",
-              "value": null
-            },
-            {
-              "column": "real_estate_released_f",
-              "operator": "BETWEEN",
-              "value": ["2025-10-01", "2025-12-31"]
-            }
-          ],
-          "unions": [
-            {
-              "columns": ["fuze_project_id", "site_name", "'Real Estate Released' AS milestone", "real_estate_released_f AS forecast_date"],
-              "filters": [
-                {
-                  "column": "real_estate_released_f",
-                  "operator": "IS NOT NULL",
-                  "value": null
-                },
-                {
-                  "column": "real_estate_released_f",
-                  "operator": "BETWEEN",
-                  "value": ["2025-10-01", "2025-12-31"]
-                }
-              ]
-            },
-            {
-              "columns": ["fuze_project_id", "site_name", "'Zoning Approved' AS milestone", "zoning_approved_a AS forecast_date"],
-              "filters": [
-                {
-                  "column": "zoning_approved_a",
-                  "operator": "IS NOT NULL",
-                  "value": null
-                },
-                {
-                  "column": "zoning_approved_a",
-                  "operator": "BETWEEN",
-                  "value": ["2025-10-01", "2025-12-31"]
-                }
-              ]
-            },
-            {
-              "columns": ["fuze_project_id", "site_name", "'Transport Delivery' AS milestone", "transport_delivery_completed_a AS forecast_date"],
-              "filters": [
-                {
-                  "column": "transport_delivery_completed_a",
-                  "operator": "IS NOT NULL",
-                  "value": null
-                },
-                {
-                  "column": "transport_delivery_completed_a",
-                  "operator": "BETWEEN",
-                  "value": ["2025-10-01", "2025-12-31"]
-                }
-              ]
-            }
-          ]
-        }
-
-      **Example 3 (for "Anomalies (extreme delays or missing milestones)")**
-        {
-          "tables": ["projects_encoded"],
-          "columns": ["fuze_project_id", "site_name", "rer_duration", "anomaly_flag"],
-          "filters": [
-            {
-              "column": "real_estate_released_a",
-              "operator": "IS NOT NULL",
-              "value": null
-            },
-            {
-              "column": "project_started_milestone_a",
-              "operator": "IS NOT NULL",
-              "value": null
-            },
-            {
-              "column": "rer_duration",
-              "operator": "IS NULL OR > mean_dur + 2 * std_dur OR < mean_dur - 2 * std_dur",
-              "value": null
-            }
-          ],
-          "aggregations": [
-            {
-              "column": "TO_DATE(real_estate_released_a, 'YYYY-MM-DD') - TO_DATE(project_started_milestone_a, 'YYYY-MM-DD')",
-              "type": "AVG",
-              "alias": "mean_dur"
-            },
-            {
-              "column": "TO_DATE(real_estate_released_a, 'YYYY-MM-DD') - TO_DATE(project_started_milestone_a, 'YYYY-MM-DD')",
-              "type": "STDDEV",
-              "alias": "std_dur"
-            }
-          ],
-          "joins": [
-            {
-              "type": "CROSS",
-              "table": "stats",
-              "on": null
-            }
-          ],
-          "case_statements": [
-            {
-              "column": "rer_duration",
-              "cases": [
-                {
-                  "condition": "rer_duration > mean_dur + 2 * std_dur",
-                  "value": "'Extreme Delay'"
-                },
-                {
-                  "condition": "rer_duration < mean_dur - 2 * std_dur",
-                  "value": "'Unusually Fast'"
-                },
-                {
-                  "condition": "ELSE",
-                  "value": "'Normal'"
-                }
-              ],
-              "alias": "anomaly_flag"
-            }
-          ]
-        }
+      (… keep the same three examples you provided …)
     </Examples>
   expected_output: >
     <Output Format>
@@ -223,7 +132,7 @@ query_interpretation_task:
         "group_by": "Columns to group the results by",
         "order_by": "Columns to order the results by",
         "unions": "Details of any unions if applicable",
-        "case_statements": "Details of any case statements if applicable",
+        "case_statements": "Details of any case statements if applicable"
     }}
     </Output Format>
   agent: query_interpretation_agent
@@ -231,170 +140,37 @@ query_interpretation_task:
 query_generation_task:
   description: >
     <Task>
-      Convert structured query plan into a syntatically correct, optimized Postgres SQL query.
+      Convert structured query plan into a syntactically correct, optimized Postgres SQL query.
     </Task>
 
     Today's date is {date}.
 
     <Instructions>
       Using the provided logical query plan, generate a syntactically correct and optimized SQL query that fulfills the user's request.
-        1. Generate only one SQL query for the plan.
-        2. Use explicit JOIN type (INNER, LEFT, RIGHT) as indicated in the plan.
-        3. Apply all filters, aggregations, GROUP BY, and ORDER BY accurately.
-        4. Optimize the query for performance without changing results.
-        5. Return ONLY the SQL, nothing else.
-        6. Ensure all identifiers match the database metadata exactly.
-    <Instructions>
+        1. Always generate the SQL in **Postgres format**.
+        2. Generate only one SQL query for the plan.
+        3. Use explicit JOIN type (INNER, LEFT, RIGHT) as indicated in the plan.
+        4. Apply all filters, aggregations, GROUP BY, and ORDER BY accurately.
+        5. Only include a GROUP BY clause if the SELECT statement contains aggregate functions (e.g., SUM, COUNT, MAX, MIN, AVG). If no aggregate is used, do not add GROUP BY.
+        6. Optimize the query for performance without changing results.
+        7. Return ONLY the SQL, nothing else.
+        8. Ensure all identifiers match the database metadata exactly.
+        9. Always use **lowercase snake_case** for table names, column names, and aliases.
+           - Never use capital letters.
+           - Never begin with a capital letter.
+    </Instructions>
 
     <Examples>
-      Here are two examples of good SQL queries based on logical plans:
-      **Example 1**
-        <Logical Query Input>
-        {
-          "tables": ["projects_encoded"],
-          "columns": ["county"],
-          "filters": [
-            {
-              "column": "real_estate_released_a",
-              "operator": "IS NOT NULL",
-              "value": null
-            },
-            {
-              "column": "project_started_milestone_a",
-              "operator": "IS NOT NULL",
-              "value": null
-            }
-          ],
-          "aggregations": [
-            {
-              "column": "TO_DATE(real_estate_released_a, 'YYYY-MM-DD') - TO_DATE(project_started_milestone_a, 'YYYY-MM-DD')",
-              "type": "AVG",
-              "alias": "avg_rer_duration"
-            }
-          ],
-          "joins": [],
-          "group_by": ["county"],
-          "order_by": ["avg_rer_duration DESC"]
-        }
-        </Logical Query Input>
-
-        <SQL Output>
-          SELECT
-          COALESCE(structure_owner, vendor_site_acquisition) AS responsible_party,
-          COUNT(*) AS total_projects,
-          AVG(TO_DATE(real_estate_released_a, 'YYYY-MM-DD')
-              - TO_DATE(project_started_milestone_a, 'YYYY-MM-DD')) AS avg_delay
-          FROM projects_encoded
-          WHERE real_estate_released_a IS NOT NULL
-            AND project_started_milestone_a IS NOT NULL
-          GROUP BY responsible_party
-          ORDER BY avg_delay DESC;
-        </SQL Output>
-    
-      **Example 2**
-        <Logical Query Input>
-        {
-          "tables": ["projects_encoded"],
-          "columns": ["fuze_project_id", "site_name", "rer_duration", "anomaly_flag"],
-          "filters": [
-            {
-              "column": "real_estate_released_a",
-              "operator": "IS NOT NULL",
-              "value": null
-            },
-            {
-              "column": "project_started_milestone_a",
-              "operator": "IS NOT NULL",
-              "value": null
-            },
-            {
-              "column": "rer_duration",
-              "operator": "IS NULL OR > mean_dur + 2 * std_dur OR < mean_dur - 2 * std_dur",
-              "value": null
-            }
-          ],
-          "aggregations": [
-            {
-              "column": "TO_DATE(real_estate_released_a, 'YYYY-MM-DD') - TO_DATE(project_started_milestone_a, 'YYYY-MM-DD')",
-              "type": "AVG",
-              "alias": "mean_dur"
-            },
-            {
-              "column": "TO_DATE(real_estate_released_a, 'YYYY-MM-DD') - TO_DATE(project_started_milestone_a, 'YYYY-MM-DD')",
-              "type": "STDDEV",
-              "alias": "std_dur"
-            }
-          ],
-          "joins": [
-            {
-              "type": "CROSS",
-              "table": "stats",
-              "on": null
-            }
-          ],
-          "case_statements": [
-            {
-              "column": "rer_duration",
-              "cases": [
-                {
-                  "condition": "rer_duration > mean_dur + 2 * std_dur",
-                  "value": "'Extreme Delay'"
-                },
-                {
-                  "condition": "rer_duration < mean_dur - 2 * std_dur",
-                  "value": "'Unusually Fast'"
-                },
-                {
-                  "condition": "ELSE",
-                  "value": "'Normal'"
-                }
-              ],
-              "alias": "anomaly_flag"
-            }
-          ]
-        }
-        </Logical Query Input>
-
-        <SQL Output>
-          WITH durations AS (
-          SELECT
-              fuze_project_id,
-              site_name,
-              (TO_DATE(real_estate_released_a, 'YYYY-MM-DD') 
-              - TO_DATE(project_started_milestone_a, 'YYYY-MM-DD')) AS rer_duration
-          FROM projects_encoded
-          WHERE real_estate_released_a IS NOT NULL
-            AND project_started_milestone_a IS NOT NULL
-          ),
-          stats AS (
-              SELECT
-                  AVG(rer_duration) AS mean_dur,
-                  STDDEV(rer_duration) AS std_dur
-              FROM durations
-          )
-          SELECT d.fuze_project_id,
-                d.site_name,
-                d.rer_duration,
-                CASE
-                    WHEN d.rer_duration > s.mean_dur + 2 * s.std_dur THEN 'Extreme Delay'
-                    WHEN d.rer_duration < s.mean_dur - 2 * s.std_dur THEN 'Unusually Fast'
-                    ELSE 'Normal'
-                END AS anomaly_flag
-          FROM durations d
-          CROSS JOIN stats s
-          WHERE d.rer_duration IS NULL
-            OR d.rer_duration > s.mean_dur + 2 * s.std_dur
-            OR d.rer_duration < s.mean_dur - 2 * s.std_dur;
-        </SQL Output>
+      (… keep your Example 1 and Example 2 SQL conversions …)
     </Examples>
   expected_output: >
     <Output Format>
-      SELECT t1.column1, t2.column2, SUM(t1.amount) AS total
-      FROM table1 t1
-      JOIN table2 t2 ON t1.id = t2.ref_id
-      WHERE t1.status = 'active'
-      GROUP BY t1.column1, t2.column2
-      ORDER BY total DESC;
+      select t1.column1, t2.column2, sum(t1.amount) as total
+      from table1 t1
+      join table2 t2 on t1.id = t2.ref_id
+      where t1.status = 'active'
+      group by t1.column1, t2.column2
+      order by total desc;
     </Output Format>
   agent: query_generation_agent
   context:

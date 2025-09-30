@@ -35,3 +35,7 @@ class SQLQueryState(BaseModel):
         default=False,
         description="Indicates whether the last SQL execution resulted in an error.",
     )
+    sql_query: str = Field(
+        default="",
+        description="The final SQL query string that was generated and executed.",
+    )

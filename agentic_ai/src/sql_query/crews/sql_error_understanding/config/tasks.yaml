@@ -1,54 +1,76 @@
-error_understanding_task:
+sql_error_capture_task:
   description: >
     <Task>
-      Analyze a failed SQL query and its error message.
-      Return structured information about the error so the Query Planner can avoid repeating the same mistake.
+      Capture and analyze raw SQL execution errors from the database engine.
     </Task>
 
-    <Context>
-      You are provided with the list of error that have occured during SQL execution, the logical query plan, and the table schema.:
-        - **logical_query_plan**: The logical query plan that outlines the steps taken to generate the SQL query.
-        - **table_schema**: Column names and descriptions.
-        - **previous_error**: A list of error messages from previous SQL execution attempts, if any.
-
-      <Logical Query Plan>
-        {logical_query_plan}
-      </Logical Query Plan>
-
-      <Raw SQL Errors>
-        {previous_error}
-      </Raw SQL Errors>
-
-      <TableSchema>
-        <Columns>
-          {column_description}
-        </Columns>
-      </TableSchema>
-    </Context>
-    
-    <Audience>
-      SQL Query Planner component of an AI system.
-    </Audience>
+    <Inputs>
+      - SQL query attempted
+      - Raw error message
+    </Inputs>
 
     <Instructions>
-      1. Identify the error type (missing column, syntax error, type mismatch, ambiguous reference, invalid function, etc.) from the SQLAlchemy error message and stack trace.
-      2. Identify affected columns and tables.
-      3. Provide structured suggested corrections that the Query Planner can directly apply.
-      4. Do not generate human-friendly explanations; output must be fully machine-readable JSON.
+      1. Extract the key parts of the error (line numbers, column names, table names).
+      2. Classify the error into categories: Syntax, Semantic (invalid column/table),
+         Join Ambiguity, Data Constraint, Permission, Timeout, or Other.
+      3. Provide a plain-English summary of why the error occurred.
+      4. If possible, highlight which part of the query caused the error.
     </Instructions>
+
+    <Output Format>
+      {{
+        "error_type": "Syntax / Semantic / Join / Permission / Timeout / Other",
+        "root_cause": "Description of the problem",
+        "offending_part": "The specific column/table/keyword if available"
+      }}
+    </Output Format>
   expected_output: >
-    <OutputFormat>
-      {
-        "error_type": "the exact reason of the error as specified in SQLAlchemy error message and stack trace",
-        "affected_columns": ["list of columns that caused the error"],
-        "affected_tables": ["list of table names if applicable, else []"],
-        "suggested_corrections": [
-          {
-            "action": "the corresponding action to fix the error, e.g., replace_column, add_alias, fix_type, etc.",
-            "from": "the original column/table/function that caused the error",
-            "to": "the corrected column/table/function, if applicable"
-          }
-        ]
-      }
-    </OutputFormat>
-  agent: result_interpretation_agent
+    {{
+      "error_type": "Semantic",
+      "root_cause": "The column 'market' does not exist in table 'Projects'.",
+      "offending_part": "market"
+    }}
+  agent: sql_error_analysis_agent
+
+sql_error_recovery_task:
+  description: >
+    <Task>
+      Propose a recovery strategy to fix the failed SQL query, based on the captured error.
+    </Task>
+
+    <Inputs>
+      - User’s original intent (query plan)
+      - The failing SQL query
+      - Captured error details from `sql_error_capture_task`
+    </Inputs>
+
+    <Instructions>
+      1. Suggest corrections without changing user intent.
+      2. If the error was caused by a missing/invalid column, map it to the closest valid column using schema knowledge.
+      3. If a join condition failed, propose an explicit join path based on FK/PK relationships.
+      4. If a filter is invalid, suggest removing or replacing it.
+      5. If multiple strategies are possible, explain each briefly.
+    </Instructions>
+
+    <Output Format>
+      {{
+        "proposed_fix": "Description of correction",
+        "suggested_query_plan": "Revised logical query plan that can be re-used by query generator"
+      }}
+    </Output Format>
+  expected_output: >
+    {{
+      "proposed_fix": "Replace 'market' with 'site_type' from Projects table",
+      "suggested_query_plan": {{
+          "tables": ["Projects"],
+          "columns": ["site_type", "COUNT(*)"],
+          "filters": [],
+          "aggregations": [
+              {{"column": "site_type", "type": "COUNT", "alias": "count"}}
+          ],
+          "group_by": ["site_type"]
+      }}
+    }}
+  agent: sql_error_recovery_agent
+  context:
+    - sql_error_capture_task

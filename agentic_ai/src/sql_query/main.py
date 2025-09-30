@@ -1,5 +1,5 @@
 from decimal import Decimal
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 
 import aiofiles
 from crewai.flow import Flow, listen, start, router, or_
@@ -15,14 +15,13 @@ from agentic_ai.src.sql_query.schemas import SQLQueryState
 from backend.app.db.session import AsyncSessionLocal
 
 
-MAX_RETRIES = 3
+MAX_RETRIES = 5
 
 
 class SQLQueryGeneratorFlow(Flow[SQLQueryState]):
     @start()
     async def read_table_description(self):
         self.state.retry_count = 0
-
         async with aiofiles.open("agentic_ai/data/data.txt", mode="r") as f:
             column_description = await f.read()
         self.state.column_description = column_description
@@ -41,9 +40,13 @@ class SQLQueryGeneratorFlow(Flow[SQLQueryState]):
                 "previous_error": self.state.previous_error_analysis,
             }
         )
-        self.state.logical_query_plan = result.tasks_output[0].raw
-        return result.raw
 
+        # Always set defaults
+        self.state.logical_query_plan = result.tasks_output[0].raw or ""
+        self.state.sql_query = result.raw or ""   # ensure not None
+        return self.state.sql_query
+    
+ 
     @listen("generate_sql_query")
     async def run_sql_query(self, sql_query: str):
         try:
@@ -55,37 +58,54 @@ class SQLQueryGeneratorFlow(Flow[SQLQueryState]):
                     processed_results = []
                     for row in query_results_raw:
                         processed_row = {
-                            key: float(value) if isinstance(value, Decimal) else value
+                            key: (
+                                float(value) if isinstance(value, Decimal)
+                                else value.isoformat() if hasattr(value, "isoformat")
+                                else value
+                            )
                             for key, value in row.items()
                         }
                         processed_results.append(processed_row)
 
-                    self.state.query_results = processed_results
+                    # Always set query_results
+                    self.state.query_results = processed_results or []
 
             self.state.has_sql_error = False
+            self.state.empty_result = not bool(self.state.query_results)
 
         except SQLAlchemyError as e:
             self.state.previous_error.append(str(e))
             self.state.has_sql_error = True
+            self.state.query_results = []   # fallback
+            self.state.empty_result = True
+
+
 
     @router("run_sql_query")
     def handle_query_routing(self):
         if self.state.retry_count >= MAX_RETRIES:
             return "max_retries_exceeded"
         self.state.retry_count += 1
+
         if self.state.has_sql_error:
             return "analyze_sql_error"
+        if getattr(self.state, "empty_result", False):
+            return "interpret_result"   # still interpret but with "no results"
         return "interpret_result"
+
 
     @listen("analyze_error")
     async def analyze_sql_error(self):
         crew = SQLErrorUnderstandingCrew()
+        date_now = self._get_current_datetime()
         result = await crew.crew().kickoff_async(
             inputs={
                 "user_prompt": self.state.user_prompt,
                 "logical_query_plan": self.state.logical_query_plan,
                 "previous_error": self.state.previous_error,
                 "column_description": self.state.column_description,
+                "date": date_now,   # 🔥 add this
+
             }
         )
         self.state.previous_error_analysis = result.json_dict or {}
@@ -94,17 +114,22 @@ class SQLQueryGeneratorFlow(Flow[SQLQueryState]):
     @listen("interpret_result")
     async def generate_sql_interpretation(self):
         crew = SQLResultInterpreterCrew()
+        date_now = self._get_current_datetime()
+
         result = await crew.crew().kickoff_async(
             inputs={
-                "user_prompt": self.state.user_prompt,
-                "logical_query_plan": self.state.logical_query_plan,
-                "query_results": self.state.query_results[:40],
-                "column_description": self.state.column_description,
+                "user_prompt": self.state.user_prompt or "",
+                "sql_query": self.state.sql_query or "N/A",
+                "sql_results": self.state.query_results[:40] or [],
+                "date": date_now or "",
+                "column_description": self.state.column_description or "",
             }
         )
+
         output = result.json_dict
         if not output:
             return output
+
         output["data"].update({"rows": self.state.query_results})
         return output
 

@@ -10,6 +10,9 @@ from agentic_ai.mapper import TASKS, AGENTS
 
 API_BASE = "http://localhost:8000/api/v1"
 
+# BASE_URL = os.getenv("BASE_URL")
+# API_BASE = f"{BASE_URL}/api/v1"
+
 st.set_page_config(page_title="Agentic Project Summary", page_icon="📊", layout="wide")
 st.title("📊 Agentic Project Summary — Live Run Viewer")
 

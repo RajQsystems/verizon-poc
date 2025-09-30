@@ -35,3 +35,11 @@ class SQLQueryState(BaseModel):
         default=False,
         description="Indicates whether the last SQL execution resulted in an error.",
     )
+    sql_query: str = Field(
+        default="",
+        description="The last executed SQL query string.",
+    )
+    empty_result: bool = Field(
+        default=False,
+        description="Indicates whether the last SQL execution returned no rows.",
+    )

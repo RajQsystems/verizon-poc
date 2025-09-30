@@ -1,68 +1,63 @@
-result_interpretation_task:
+interpret_sql_results_task:
   description: >
     <Task>
-      Analyze SQL query results strictly in the context of the user's request, and produce both structured data and a Markdown description suitable for frontend rendering.
+      Interpret raw SQL query outputs and transform them into meaningful business insights.
     </Task>
 
-    <User Request>
-      Here is the user's original request:
-      {user_prompt}
-    </User Request>
+    <Inputs>
+      You are given:
+      - The original user request: {user_prompt}
+      - The SQL query that was executed: {sql_query}
+      - The raw SQL output: {sql_results}
+      - Today's date: {date}
+    </Inputs>
 
-    <Context>
-      You are provided with the following context to assist in interpreting the SQL query results:
-        - **logical_query_plan**: The logical query plan that outlines the steps taken to generate the SQL query.
-        - **sql_query_results**: The results returned from executing the SQL query.
-        - **table_schema**: Column names and descriptions.
+    <Database Context>
+      The underlying schema includes:
+        1. Projects — project_id, market, site_type, start/end dates.
+        2. Agents — agent_id, agent_name, description.
+        3. Milestones — milestone_id, project_id, agent_id, milestone_name, planned/actual dates, status, anomaly_flag.
+        4. Dependencies — milestone dependencies (prerequisite, successor).
+        5. Vendors — vendor_id, vendor_name, role.
+        6. Milestone_Vendors — join table milestone_id ↔ vendor_id.
+        7. Anomalies — anomaly_id, milestone_id, type, severity, description, detected_on.
+        8. Cycle_Times — cycle_id, project_id, agent_start_id, agent_end_id, planned vs. actual duration, variance.
+    </Database Context>
 
-      <Logical Query Plan>
-        {logical_query_plan}
-      </Logical Query Plan>
-
-      <SQL Query Results>
-        {query_results}
-      </SQL Query Results>
-
-      <TableSchema>
-        <Columns>
-          {column_description}
-        </Columns>
-      </TableSchema>
-    </Context>
-
-    <Tone>
-      Professional and clear, suitable for business stakeholders.
-    </Tone>
-    
     <Audience>
-      Business analysts and decision-makers; output should be understandable by non-technical users.
+      Business leaders, program managers, and engineers who need actionable insights
+      rather than raw numbers.
     </Audience>
 
     <Instructions>
-      1. Analyze data if available; otherwise, rely on schema and aggregates.
-      2. Provide a **well-formatted Markdown summary**:
-         - Use headings for sections.
-         - Avoid h1, h2 tags; start with h3 and suitable headers per section.
-         - Use paragraphs for explanations.
-         - Use **bold** for key metrics/terms and *italics* for emphasis.
-         - Use bullet points or numbered lists for trends, recommendations, or anomalies.
-      3. Use the <SQL Query Results> and <Logical Query Plan> to just generate the context rich summary.
-      4. Provide actionable recommendations and visualization hints for frontend.
-      5. **Ensure all outputs follow hard rules:** ISO dates, consistent keys, safe Markdown, valid JSON.
+      1. Summarize the main findings in plain language (e.g., "Market A projects
+         are delayed by an average of 14 days compared to plan").
+      2. Highlight anomalies, outliers, or unexpected results.
+      3. Explain *why* results might look this way using schema context (e.g.,
+         "delays tied to vendor X", "agent Y has most anomalies").
+      4. Suggest next steps or follow-up questions for the business.
+      5. Be concise but detailed: avoid just restating the raw numbers.
     </Instructions>
+
+    <Examples>
+      **Example 1 (Milestone delays by vendor):**
+        "Vendor A shows the highest average milestone delay at 12.5 days,
+        mostly tied to Construction-related milestones in Market B.
+        Vendor B performed consistently with minimal delays.
+        This suggests Vendor A’s resource allocation is a risk point."
+
+      **Example 2 (Cycle efficiency):**
+        "Across 80 cycles, average variance between planned and actual duration
+        was +6 days. RF → Construction transitions contributed 70% of delays,
+        highlighting a bottleneck between engineering and build-out phases."
+    </Examples>
   expected_output: >
-    <OutputFormat>
-      {
-        "summary": "A comprehensive Markdown summary of the SQL query results, formatted with headings, paragraphs, bold/italics, and bullet points as needed.",
-        "data": {
-          "columns": "list of column names",
-        },
-        "recommendations": ["List of actionable recommendations based on the data analysis"],
-        "visualization_hints": {
-          "table": true,
-          "timeline_chart": true,
-          "bar_chart": false
-        }
-      }
-    </OutputFormat>
-  agent: result_interpretation_agent
+    <Output Format>
+    {{
+        "summary": "Plain-language interpretation of the results",
+        "patterns": ["List of notable trends"],
+        "anomalies": ["Outliers, risks, issues"],
+        "recommendations": ["Concrete actions or next steps"]
+    }}
+    </Output Format>
+  agent: result_analysis_agent
