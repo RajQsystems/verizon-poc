@@ -43,3 +43,9 @@ class SQLQueryState(BaseModel):
         default=False,
         description="Indicates whether the last SQL execution returned no rows.",
     )
+
+    # NEW: execution trace (each entry is a dict—always JSON serializable)
+    execution_trace: list[dict] = Field(
+        default_factory=list,
+        description="Chronological list of steps with debug info for UI."
+    )
