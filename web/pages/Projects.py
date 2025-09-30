@@ -10,18 +10,20 @@ from agentic_ai.mapper import TASKS, AGENTS
 
 API_BASE = "http://localhost:8000/api/v1"
 
-# BASE_URL = os.getenv("BASE_URL")
-# API_BASE = f"{BASE_URL}/api/v1"
-
 st.set_page_config(page_title="Agentic Project Summary", page_icon="📊", layout="wide")
 st.title("📊 Agentic Project Summary — Live Run Viewer")
 
 # ------------------------
-# Sidebar
+# Main Run Input (moved from sidebar to main)
 # ------------------------
-st.sidebar.header("Run a Summary")
-project_id = st.sidebar.text_input("Project ID", value="ID_277EA56BE3")
-run_btn = st.sidebar.button("Run")
+st.markdown("Enter a Project ID and click **Run** to fetch data.")
+
+with st.container():
+    col1, col2 = st.columns([3, 1])  # input + button layout
+    with col1:
+        project_id = st.text_input("Project ID", value="ID_277EA56BE3", label_visibility="collapsed")
+    with col2:
+        run_btn = st.button("Run", use_container_width=True)
 
 # ------------------------
 # Helpers
@@ -124,11 +126,6 @@ def render_interactive_flow():
     net.save_graph("graph.html")
     with open("graph.html", "r", encoding="utf-8") as f:
         components.html(f.read(), height=800, scrolling=True)
-
-    # Node selector (workaround for missing click → Streamlit event)
-    # selected = st.selectbox("🔎 Select a node to expand details:", sorted(all_nodes))
-    # if selected:
-    #     st.session_state["selected_node"] = selected
 
 # ------------------------
 # Agent/Task details panel

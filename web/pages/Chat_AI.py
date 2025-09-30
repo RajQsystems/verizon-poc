@@ -35,53 +35,91 @@ def fetch_data(user_query: str = ""):
 # =========================
 # Helper: Dynamic Visualization + Trace
 # =========================
+import graphviz
+
 def render_results(content: dict):
     summary = content.get("summary", "")
     df = content.get("df", None)
     trace = content.get("trace", [])
 
-    # --- Two-column layout: Summary (left) | Execution Trace (right) ---
-    col1, col2 = st.columns([2, 1])  # Adjust ratio as needed
+    # --- Top Row: Summary + Execution Trace ---
+    top_left, top_right = st.columns([2, 1])
 
-    with col1:
+    with top_left:
         st.markdown("### 📊 Summary")
         st.markdown(summary)
 
         if df is not None and not df.empty:
             st.dataframe(df, use_container_width=True)
 
-    with col2:
+    with top_right:
         if trace:
             st.markdown("### ⚙️ Execution Trace")
+
+            # Step renaming map
+            step_name_map = {
+                "read_table_description": "Analyze User Query",
+                "generate_sql_query": "Generate Relevant Information",
+                "run_sql_query": "Run Background Checks",
+                "interpret_result": "Interpret Overall Result",
+            }
+
             for i, step in enumerate(trace, 1):
-                with st.expander(f"Step {i}: {step.get('step','')}"):
+                raw_step = step.get("step", "")
+                display_step = step_name_map.get(raw_step, raw_step)  # fallback to raw if not mapped
+
+                with st.expander(f"Step {i}: {display_step}"):
                     if step.get("time"):
                         st.caption(f"⏱ {step['time']}")
                     st.write(step.get("message", ""))
                     if step.get("payload"):
                         st.json(step["payload"])
 
-    # --- Visualizations always go below, spanning full width ---
-    if df is not None and not df.empty:
-        numeric_cols = df.select_dtypes(include=["int64", "float64"]).columns.tolist()
-        non_numeric_cols = [c for c in df.columns if c not in numeric_cols]
 
-        if numeric_cols and non_numeric_cols:
-            st.markdown("### 📈 Visualizations")
-            x_col = non_numeric_cols[0]
-            y_col = numeric_cols[0]
+    # --- Bottom Row: Visualizations + Flowchart ---
+    bottom_left, bottom_right = st.columns([2, 1])
 
-            st.bar_chart(df.set_index(x_col)[y_col])
+    with bottom_left:
+        if df is not None and not df.empty:
+            numeric_cols = df.select_dtypes(include=["int64", "float64"]).columns.tolist()
+            non_numeric_cols = [c for c in df.columns if c not in numeric_cols]
 
-            pie = alt.Chart(df).mark_arc().encode(
-                theta=alt.Theta(field=y_col, type="quantitative"),
-                color=alt.Color(field=x_col, type="nominal"),
-            )
-            st.altair_chart(pie, use_container_width=True)
+            if numeric_cols and non_numeric_cols:
+                st.markdown("### 📈 Visualizations")
+
+                x_col = non_numeric_cols[0]
+                y_col = numeric_cols[0]
+
+                st.bar_chart(df.set_index(x_col)[y_col])
+
+                pie = alt.Chart(df).mark_arc().encode(
+                    theta=alt.Theta(field=y_col, type="quantitative"),
+                    color=alt.Color(field=x_col, type="nominal"),
+                )
+                st.altair_chart(pie, use_container_width=True)
+            else:
+                st.info("ℹ️ No numeric data found for charts. Showing only table.")
         else:
-            st.info("ℹ️ No numeric data found for charts. Showing only table.")
-    else:
-        st.info("No results to display.")
+            st.info("No results to display.")
+
+    # with bottom_right:
+        # if trace:
+        #     st.markdown("### 🪢 Flowchart")
+        #     dot = graphviz.Digraph()
+
+        #     # Use execution trace to auto-generate nodes and edges
+        #     prev_step = None
+        #     for i, step in enumerate(trace, 1):
+        #         step_id = f"step_{i}"
+        #         label = f"{i}. {step.get('step','')}"
+        #         dot.node(step_id, label, shape="box", style="filled", color="lightgrey")
+
+        #         if prev_step:
+        #             dot.edge(prev_step, step_id)
+        #         prev_step = step_id
+
+        #     st.graphviz_chart(dot, use_container_width=True)
+
 
 
 
