@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 BASE_URL = os.getenv("BASE_URL")
-API_URL = f"{BASE_URL}/api/v1/alerts"
+# API_URL = f"{BASE_URL}/api/v1/alerts"
+API_URL= "http://localhost:8000/api/v1/alerts"
 
 st.set_page_config(page_title="Project Risk Dashboard", page_icon="🚨", layout="wide")
 

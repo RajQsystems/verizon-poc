@@ -16,7 +16,7 @@ st.title("📊 Agentic Project Summary — Live Run Viewer")
 # ------------------------
 # Main Run Input (moved from sidebar to main)
 # ------------------------
-st.markdown("Enter a Project ID and click **Run** to fetch data.")
+# st.markdown("Enter a Project ID and click **Run** to fetch data.")
 
 with st.container():
     col1, col2 = st.columns([3, 1])  # input + button layout

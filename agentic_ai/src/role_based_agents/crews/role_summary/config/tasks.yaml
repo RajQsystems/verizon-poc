@@ -1,0 +1,65 @@
+status_summary_task:
+  description: >
+    Summarize milestone statuses for the selected role.
+  expected_output: >
+    {
+      "summary": "Plain language interpretation of status distribution",
+      "status_counts": {...}
+    }
+  agent: status_summary_agent
+
+delay_analysis_task:
+  description: >
+    Compare planned vs actual milestone durations, compute delays, and highlight
+    projects most at risk.
+  expected_output: >
+    {
+      "summary": "Interpretation of delays across projects",
+      "delays": [...]
+    }
+  agent: delay_analysis_agent
+
+anomaly_triage_task:
+  description: >
+    Detect and classify anomalies tied to the selected role. Summarize
+    frequency, severity, and provide explanations for anomalies.
+  expected_output: >
+    {
+      "summary": "Interpretation of anomalies",
+      "anomalies": [...]
+    }
+  agent: anomaly_triage_agent
+
+vendor_attribution_task:
+  description: >
+    Attribute milestone delays to vendors, explaining which vendors are linked
+    to slippages and where accountability lies.
+  expected_output: >
+    {
+      "summary": "Interpretation of vendor impact",
+      "impacts": [...]
+    }
+  agent: vendor_attribution_agent
+
+dependency_task:
+  description: >
+    Map role dependencies across workflow and explain bottlenecks caused by
+    upstream or downstream milestones.
+  expected_output: >
+    {
+      "summary": "Dependency flow explanation",
+      "dependencies": [...]
+    }
+  agent: dependency_mapping_agent
+
+final_composition_task:
+  description: >
+    Assemble all role-specific outputs into one cohesive executive narrative
+    including headline, top risks, and recommended next actions.
+  expected_output: >
+    {
+      "headline": "...",
+      "risks": [...],
+      "next_actions": [...]
+    }
+  agent: meta_summary_agent
