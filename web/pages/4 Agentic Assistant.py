@@ -1,3 +1,5 @@
+# Agentic_AI.py
+
 import requests
 import streamlit as st
 import os
@@ -19,7 +21,6 @@ API_URL = "http://localhost:8000/api/v1/query"  # fallback to localhost for dev
 # =========================
 add_sidebar_logo()
 
-
 # =========================
 # Data Fetching
 # =========================
@@ -33,11 +34,66 @@ def fetch_data(user_query: str = ""):
 
 
 # =========================
+# Smart Chart Selector
+# =========================
+def choose_chart(user_query: str, df: pd.DataFrame):
+    """
+    Selects the most relevant chart type based on user query intent + dataframe schema.
+    """
+    if df is None or df.empty:
+        return None
+
+    # Identify column types
+    numeric_cols = df.select_dtypes(include=["int64", "float64"]).columns.tolist()
+    datetime_cols = df.select_dtypes(include=["datetime64"]).columns.tolist()
+    categorical_cols = [c for c in df.columns if c not in numeric_cols + datetime_cols]
+
+    query_lower = user_query.lower()
+
+    # ---- Pie Chart Cases ----
+    if "share" in query_lower or "distribution" in query_lower or "proportion" in query_lower:
+        if numeric_cols and categorical_cols:
+            return alt.Chart(df).mark_arc().encode(
+                theta=alt.Theta(field=numeric_cols[0], type="quantitative"),
+                color=alt.Color(field=categorical_cols[0], type="nominal"),
+                tooltip=categorical_cols + numeric_cols,
+            )
+
+    # ---- Line Chart Cases (time series) ----
+    if "trend" in query_lower or "per month" in query_lower or "time" in query_lower or "quarter" in query_lower or datetime_cols:
+        if datetime_cols and numeric_cols:
+            return alt.Chart(df).mark_line(point=True).encode(
+                x=alt.X(datetime_cols[0], type="temporal"),
+                y=alt.Y(numeric_cols[0], type="quantitative"),
+                color=alt.value("steelblue"),
+                tooltip=datetime_cols + numeric_cols,
+            )
+
+    # ---- Bar Chart Cases ----
+    if "count" in query_lower or "how many" in query_lower or "top" in query_lower or "longest" in query_lower or categorical_cols:
+        if numeric_cols and categorical_cols:
+            return alt.Chart(df).mark_bar().encode(
+                x=alt.X(categorical_cols[0], type="nominal", sort="-y"),
+                y=alt.Y(numeric_cols[0], type="quantitative"),
+                color=alt.Color(categorical_cols[0], type="nominal"),
+                tooltip=categorical_cols + numeric_cols,
+            )
+
+    # ---- Fallback scatter ----
+    if len(numeric_cols) >= 2:
+        return alt.Chart(df).mark_circle(size=60).encode(
+            x=numeric_cols[0],
+            y=numeric_cols[1],
+            tooltip=df.columns.tolist(),
+        )
+
+    return None
+
+
+# =========================
 # Helper: Dynamic Visualization + Trace
 # =========================
-import graphviz
-
-def render_results(content: dict):
+def render_results(user_query: str, content: dict):
     summary = content.get("summary", "")
     df = content.get("df", None)
     trace = content.get("trace", [])
@@ -66,7 +122,7 @@ def render_results(content: dict):
 
             for i, step in enumerate(trace, 1):
                 raw_step = step.get("step", "")
-                display_step = step_name_map.get(raw_step, raw_step)  # fallback to raw if not mapped
+                display_step = step_name_map.get(raw_step, raw_step)
 
                 with st.expander(f"Step {i}: {display_step}"):
                     if step.get("time"):
@@ -75,52 +131,16 @@ def render_results(content: dict):
                     if step.get("payload"):
                         st.json(step["payload"])
 
-
-    # --- Bottom Row: Visualizations + Flowchart ---
-    bottom_left, bottom_right = st.columns([2, 1])
-
-    with bottom_left:
-        if df is not None and not df.empty:
-            numeric_cols = df.select_dtypes(include=["int64", "float64"]).columns.tolist()
-            non_numeric_cols = [c for c in df.columns if c not in numeric_cols]
-
-            if numeric_cols and non_numeric_cols:
-                st.markdown("### 📈 Visualizations")
-
-                x_col = non_numeric_cols[0]
-                y_col = numeric_cols[0]
-
-                st.bar_chart(df.set_index(x_col)[y_col])
-
-                pie = alt.Chart(df).mark_arc().encode(
-                    theta=alt.Theta(field=y_col, type="quantitative"),
-                    color=alt.Color(field=x_col, type="nominal"),
-                )
-                st.altair_chart(pie, use_container_width=True)
-            else:
-                st.info("ℹ️ No numeric data found for charts. Showing only table.")
+    # --- Visualization ---
+    st.markdown("### 📈 Visualization")
+    if df is not None and not df.empty:
+        chart = choose_chart(user_query, df)
+        if chart:
+            st.altair_chart(chart, use_container_width=True)
         else:
-            st.info("No results to display.")
-
-    # with bottom_right:
-        # if trace:
-        #     st.markdown("### 🪢 Flowchart")
-        #     dot = graphviz.Digraph()
-
-        #     # Use execution trace to auto-generate nodes and edges
-        #     prev_step = None
-        #     for i, step in enumerate(trace, 1):
-        #         step_id = f"step_{i}"
-        #         label = f"{i}. {step.get('step','')}"
-        #         dot.node(step_id, label, shape="box", style="filled", color="lightgrey")
-
-        #         if prev_step:
-        #             dot.edge(prev_step, step_id)
-        #         prev_step = step_id
-
-        #     st.graphviz_chart(dot, use_container_width=True)
-
-
+            st.info("ℹ️ No suitable chart found for this query.")
+    else:
+        st.info("No results to visualize.")
 
 
 # =========================
@@ -129,34 +149,8 @@ def render_results(content: dict):
 st.set_page_config(
     page_title="AI Chat",
     page_icon="🤖",
-    layout="wide",  # ✅ wide layout to fit trace on right-hand side
+    layout="wide",
     initial_sidebar_state="collapsed",
-)
-
-# Custom CSS
-st.markdown(
-    """
-<style>    
-    .stChatMessage { border-radius: 0.8rem; }
-    [data-testid="stHorizontalBlock"] { align-items: center; }
-    [data-testid="stChatMessage"][data-messageowner="user"] {
-        background-color: #f0f7ff;
-        border-right: 4px solid #1e88e5;
-        margin-left: 20%;
-        text-align: right;
-    }
-    [data-testid="stChatMessage"][data-messageowner="assistant"] {
-        background-color: #f9f9f9;
-        border-left: 4px solid #e0e0e0;
-        margin-right: 20%;
-    }
-    .message-avatar { width: 28px; height: 28px; border-radius: 50%; margin-right: 12px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
-    .user-avatar { background-color: #1e88e5; }
-    .assistant-avatar { background-color: #666; }
-    .chat-container { padding-bottom: 100px; }
-</style>
-""",
-    unsafe_allow_html=True,
 )
 
 # =========================
@@ -169,7 +163,7 @@ if "messages" not in st.session_state:
 # Page Title
 # =========================
 st.title("🤖 Agentic Assistant")
-st.caption("Ask me anything and I'll try to help")
+st.caption("Ask me anything and I'll generate queries + charts")
 
 
 # =========================
@@ -180,7 +174,7 @@ for message in st.session_state.messages:
         if message.get("is_code", False):
             st.code(message["content"], language="text")
         elif message["role"] == "assistant" and isinstance(message["content"], dict):
-            render_results(message["content"])
+            render_results(message.get("query", ""), message["content"])
         else:
             st.markdown(message["content"])
 
@@ -199,21 +193,20 @@ if prompt := st.chat_input("Type your message here..."):
         message_placeholder = st.empty()
         message_placeholder.markdown("Thinking ⏳")
 
-        # Fetch backend response
-        response = fetch_data(prompt)
-        if response:
+        try:
+            response = fetch_data(prompt)
             summary, table, trace = display_response(response)
             assistant_content = {"summary": summary, "df": table, "trace": trace}
-        else:
-            assistant_content = f"I received your message: _{prompt}_"
+        except Exception as e:
+            assistant_content = f"⚠️ Error: {e}"
 
         message_placeholder.empty()
 
         if isinstance(assistant_content, dict):
-            render_results(assistant_content)
+            render_results(prompt, assistant_content)
         else:
             st.markdown(assistant_content)
 
         st.session_state.messages.append(
-            {"role": "assistant", "content": assistant_content}
+            {"role": "assistant", "content": assistant_content, "query": prompt}
         )
