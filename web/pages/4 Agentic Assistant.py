@@ -60,7 +60,7 @@ def render_results(content: dict):
             step_name_map = {
                 "read_table_description": "Analyze User Query",
                 "generate_sql_query": "Generate Relevant Information",
-                "run_sql_query": "Run Background Checks",
+                "run_sql_query": "Run Agentic Process",
                 "interpret_result": "Interpret Overall Result",
             }
 
