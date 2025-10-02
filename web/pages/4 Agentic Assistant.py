@@ -8,13 +8,15 @@ import altair as alt
 from utils.response_builder import display_response
 from dotenv import load_dotenv
 from utils.sidebar_logo import add_sidebar_logo
-
+from dotenv import load_dotenv
+load_dotenv()
 # =========================
 # Load environment + API
 # =========================
 load_dotenv()
 BASE_URL = os.getenv("BASE_URL")
-API_URL = "http://localhost:8000/api/v1/query"  # fallback to localhost for dev
+API_URL=f"{BASE_URL}/api/v1/query"
+# API_URL = "http://localhost:8000/api/v1/query"  # fallback to localhost for dev
 
 # =========================
 # Sidebar Logo

@@ -5,12 +5,15 @@ from pyvis.network import Network
 import streamlit.components.v1 as components
 import requests
 import sys, os
-
+from dotenv import load_dotenv
+load_dotenv()
 # add src to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from agentic_ai.src.role_based_agents.crews.role_summary.config.mapper import get_agent_details, get_task_details
 
-API_BASE = "http://localhost:8000/api/v1"
+BASE_URL = os.getenv("BASE_URL")
+API_BASE = f"{BASE_URL}/api/v1"
+# API_BASE = f"http://localhost:8000/api/v1"
 
 st.set_page_config(page_title="Role-Centric Agent View", layout="wide")
 st.title("👷 Role-Centric View — Agent Performance")
