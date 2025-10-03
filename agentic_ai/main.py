@@ -1,3 +1,4 @@
+from urllib.parse import unquote
 from agentic_ai.src.sql_query import SQLQueryGeneratorFlow
 from agentic_ai.src.real_estate_query import RealEsateFlow
 from agentic_ai.src.construction_query import ConstructionQueryFlow
@@ -56,6 +57,7 @@ async def role_summary_generator(role: str):
     """
     try:
         flow = RoleSummaryFlow()
+        role = unquote(role)
         result = await flow.kickoff_async(inputs={"role": role})
         return result
     except APIError as e:

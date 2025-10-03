@@ -9,7 +9,11 @@ from crewai.flow import Flow, listen, start
 from agentic_ai.config.settings import settings
 from agentic_ai.exceptions import APIError
 from agentic_ai.src.role_based_agents.crews.role_summary import RoleSummaryCrew
-from agentic_ai.src.role_based_agents.schemas.role_summary import RoleSummaryState, RoleSummaryResult, AgentRun
+from agentic_ai.src.role_based_agents.schemas.role_summary import (
+    RoleSummaryState,
+    RoleSummaryResult,
+    AgentRun,
+)
 from agentic_ai.src.role_based_agents.schemas.role_summary import ActionItem
 
 from agentic_ai.mapper import TASKS, AGENTS, TASK_TO_AGENT
@@ -63,8 +67,8 @@ class RoleSummaryFlow(Flow[RoleSummaryState]):
 
         runs: List[AgentRun] = []
         for idx, out in enumerate(getattr(result, "tasks_output", []) or []):
-            task_key = getattr(out, "name", None) or f"task_{idx+1}"
-            agent_key = TASK_TO_AGENT.get(task_key, f"agent_{idx+1}")
+            task_key = getattr(out, "name", None) or f"task_{idx + 1}"
+            agent_key = TASK_TO_AGENT.get(task_key, f"agent_{idx + 1}")
 
             runs.append(
                 AgentRun(

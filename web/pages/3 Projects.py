@@ -4,10 +4,13 @@ import streamlit as st
 import streamlit.components.v1 as components
 from pyvis.network import Network
 
-import sys, os
+import os
+import sys
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from agentic_ai.mapper import TASKS, AGENTS
 from dotenv import load_dotenv
+
 load_dotenv()
 
 BASE_URL = os.getenv("BASE_URL")
@@ -25,9 +28,12 @@ st.title("📊 Agentic Project Summary — Live Run Viewer")
 with st.container():
     col1, col2 = st.columns([3, 1])  # input + button layout
     with col1:
-        project_id = st.text_input("Project ID", value="ID_277EA56BE3", label_visibility="collapsed")
+        project_id = st.text_input(
+            "Project ID", value="ID_277EA56BE3", label_visibility="collapsed"
+        )
     with col2:
         run_btn = st.button("Run", use_container_width=True)
+
 
 # ------------------------
 # Helpers
@@ -36,6 +42,7 @@ def call_json(url: str):
     r = requests.get(url, timeout=120)
     r.raise_for_status()
     return r.json()
+
 
 def render_overview(overview: dict):
     with st.expander("Overview (from /projects/{id}/summary)", expanded=True):
@@ -60,6 +67,7 @@ def render_overview(overview: dict):
         st.subheader("Cycles")
         st.json(overview.get("cycles", []))
 
+
 def render_summary(headline: str, risks: list, actions: list, raw_output: str):
     st.subheader("Executive Summary")
     st.markdown(f"**Headline:** {headline or '—'}")
@@ -81,16 +89,18 @@ def render_summary(headline: str, risks: list, actions: list, raw_output: str):
     with st.expander("Raw Output"):
         st.text(raw_output or "")
 
+
 def render_trace(trace: list[dict]):
     st.subheader("Execution Trace")
     if not trace:
         st.write("— No trace recorded —")
     for evt in trace:
         with st.expander(
-            f"[{evt.get('time','')}] {evt.get('step','')} — {evt.get('message','')}",
+            f"[{evt.get('time', '')}] {evt.get('step', '')} — {evt.get('message', '')}",
             expanded=False,
         ):
             st.json(evt.get("payload", {}))
+
 
 # ------------------------
 # Interactive Flow (PyVis)
@@ -98,13 +108,10 @@ def render_trace(trace: list[dict]):
 def render_interactive_flow():
     st.subheader("🕸️ Smart Agent–Task Flow")
 
-    net = Network(
-        height="800px", 
-        width="100%", 
-        directed=True,
-        bgcolor="#222222"
+    net = Network(height="800px", width="100%", directed=True, bgcolor="#222222")
+    net.force_atlas_2based(
+        gravity=-50, central_gravity=0.02, spring_length=200, spring_strength=0.08
     )
-    net.force_atlas_2based(gravity=-50, central_gravity=0.02, spring_length=200, spring_strength=0.08)
 
     all_nodes = set()
 
@@ -116,7 +123,9 @@ def render_interactive_flow():
             all_nodes.add(task_key)
 
         if agent_key not in all_nodes:
-            net.add_node(agent_key, label=agent_key, color="lightgreen", shape="ellipse")
+            net.add_node(
+                agent_key, label=agent_key, color="lightgreen", shape="ellipse"
+            )
             all_nodes.add(agent_key)
 
         net.add_edge(agent_key, task_key, color="gray", title="assigned")
@@ -130,6 +139,7 @@ def render_interactive_flow():
     net.save_graph("graph.html")
     with open("graph.html", "r", encoding="utf-8") as f:
         components.html(f.read(), height=800, scrolling=True)
+
 
 # ------------------------
 # Agent/Task details panel
@@ -146,23 +156,27 @@ def render_agents_debug(agents_runs: list[dict]):
             mapper_agent = AGENTS.get(agent_key, {})
 
             st.markdown("**Task Details**")
-            st.json({
-                "current_task": task_key,
-                "description": mapper_task.get("description"),
-                "steps": mapper_task.get("steps"),
-                "expected_output": mapper_task.get("expected_output"),
-                "previous": mapper_task.get("previous"),
-                "next": mapper_task.get("next"),
-                "associated_agent": mapper_task.get("agent"),
-            })
+            st.json(
+                {
+                    "current_task": task_key,
+                    "description": mapper_task.get("description"),
+                    "steps": mapper_task.get("steps"),
+                    "expected_output": mapper_task.get("expected_output"),
+                    "previous": mapper_task.get("previous"),
+                    "next": mapper_task.get("next"),
+                    "associated_agent": mapper_task.get("agent"),
+                }
+            )
 
             st.markdown("**Agent Details**")
-            st.json({
-                "agent_key": agent_key,
-                "role": mapper_agent.get("role"),
-                "goal": mapper_agent.get("goal"),
-                "backstory": mapper_agent.get("backstory"),
-            })
+            st.json(
+                {
+                    "agent_key": agent_key,
+                    "role": mapper_agent.get("role"),
+                    "goal": mapper_agent.get("goal"),
+                    "backstory": mapper_agent.get("backstory"),
+                }
+            )
 
             st.markdown("**Captured Output**")
             if run.get("output_json"):
@@ -171,6 +185,7 @@ def render_agents_debug(agents_runs: list[dict]):
                 st.text(run["output_raw"])
             else:
                 st.write("—")
+
 
 # ------------------------
 # Main

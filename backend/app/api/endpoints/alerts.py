@@ -1,4 +1,6 @@
 # backend/app/api/routers/agents_router.py
+from urllib.parse import unquote
+
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
@@ -8,7 +10,6 @@ from backend.app.models.entities import (
     Project,
     Agent,
     Milestone,
-    CycleTime,
     Anomaly,
     Dependency,
     Vendor,
@@ -18,11 +19,37 @@ from backend.app.models.entities import (
 router = APIRouter(prefix="/alerts", tags=["Alerts"])
 
 
-@router.get("/{role}", status_code=status.HTTP_200_OK)
-async def get_agent_summary(
-    role: str,
-    db: AsyncSession = Depends(get_db)
-):
+# -------------------------------
+# GET ALL AGENTS
+# -------------------------------
+@router.get("/agents/all", status_code=status.HTTP_200_OK)
+async def list_agents(db: AsyncSession = Depends(get_db)):
+    stmt = select(Agent.agent_id, Agent.agent_name, Agent.description)
+    result = await db.execute(stmt)
+    rows = result.all()
+
+    return {
+        "agents": [
+            {"id": agent_id, "name": name, "description": desc}
+            for agent_id, name, desc in rows
+        ]
+    }
+
+
+# -------------------------------
+# GET ALL MARKETS
+# -------------------------------
+@router.get("/markets", status_code=status.HTTP_200_OK)
+async def list_markets(db: AsyncSession = Depends(get_db)):
+    stmt = select(func.distinct(Project.market))
+    result = await db.execute(stmt)
+    rows = result.scalars().all()
+
+    return {"markets": rows}
+
+
+@router.get("/{role:path}", status_code=status.HTTP_200_OK)
+async def get_agent_summary(role: str, db: AsyncSession = Depends(get_db)):
     """
     Return a full summary for the given agent role (top 10 for each section):
     - status distribution
@@ -31,6 +58,7 @@ async def get_agent_summary(
     - impacted projects
     - dependencies
     """
+    role = unquote(role)
 
     # -------------------------------
     # STATUS
@@ -65,13 +93,15 @@ async def get_agent_summary(
     delays = []
     for pid, milestone_name, planned, actual in rows_delays:
         delay = (actual - planned).days if planned and actual else None
-        delays.append({
-            "project_id": pid,
-            "milestone": milestone_name,
-            "planned_date": planned,
-            "actual_date": actual,
-            "delay_days": delay,
-        })
+        delays.append(
+            {
+                "project_id": pid,
+                "milestone": milestone_name,
+                "planned_date": planned,
+                "actual_date": actual,
+                "delay_days": delay,
+            }
+        )
 
     # -------------------------------
     # ANOMALIES
@@ -97,12 +127,16 @@ async def get_agent_summary(
         select(
             Project.project_id,
             Vendor.vendor_name,
-            func.count(Milestone.milestone_id).filter(Milestone.status == "Delayed").label("delayed_count"),
+            func.count(Milestone.milestone_id)
+            .filter(Milestone.status == "Delayed")
+            .label("delayed_count"),
             func.count(Milestone.milestone_id).label("total_count"),
         )
         .join(Milestone, Project.project_id == Milestone.project_id)
         .join(Agent, Agent.agent_id == Milestone.agent_id)
-        .outerjoin(MilestoneVendor, MilestoneVendor.milestone_id == Milestone.milestone_id)
+        .outerjoin(
+            MilestoneVendor, MilestoneVendor.milestone_id == Milestone.milestone_id
+        )
         .outerjoin(Vendor, Vendor.vendor_id == MilestoneVendor.vendor_id)
         .where(Agent.agent_name == role)
         .group_by(Project.project_id, Vendor.vendor_name)
@@ -144,35 +178,3 @@ async def get_agent_summary(
         "impacts": impacts,
         "dependencies": dependencies,
     }
-
-
-# -------------------------------
-# GET ALL AGENTS
-# -------------------------------
-@router.get("/agents/all", status_code=status.HTTP_200_OK)
-async def list_agents(db: AsyncSession = Depends(get_db)):
-    stmt = select(Agent.agent_id, Agent.agent_name, Agent.description)
-    result = await db.execute(stmt)
-    rows = result.all()
-
-    return {
-        "agents": [
-            {"id": agent_id, "name": name, "description": desc}
-            for agent_id, name, desc in rows
-        ]
-    }
-
-
-# -------------------------------
-# GET ALL MARKETS
-# -------------------------------
-@router.get("/markets", status_code=status.HTTP_200_OK)
-async def list_markets(db: AsyncSession = Depends(get_db)):
-    stmt = select(func.distinct(Project.market))
-    result = await db.execute(stmt)
-    rows = result.scalars().all()
-
-    return {"markets": rows}
-
-
-
