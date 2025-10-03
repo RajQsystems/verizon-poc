@@ -93,7 +93,7 @@ if run_clicked and role:
         # Summary Header
         # ----------------------
         st.markdown(f"## 📝 Summary for {role}")
-        st.markdown(f"### {summary_data.get('headline','')}")
+        # st.markdown(f"### {summary_data.get('headline','')}")
 
         # ----------------------
         # Tabs
